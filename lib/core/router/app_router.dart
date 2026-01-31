@@ -1,5 +1,6 @@
 import 'package:dysch_mobile/presentation/screens/auth/login_screen.dart';
 import 'package:dysch_mobile/presentation/screens/home/home_screen.dart';
+import 'package:dysch_mobile/presentation/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/main/main_screen.dart';
@@ -34,8 +35,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/qr',
-            builder: (context, state) =>
-                const Center(child: Text('Escanear QR')),
+            builder: (context, state) => const QrScannerScreen(),
           ),
           GoRoute(
             path: '/nomina',
