@@ -1,11 +1,17 @@
 import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
       backgroundColor: AppColors.surfaceBackground,
       body: SafeArea(
@@ -83,6 +89,8 @@ class LoginScreen extends StatelessWidget {
               // --- FORMULARIO ---
               _buildInputLabel('Correo corporativo'),
               TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'usuario@empresa.com',
                   hintStyle: TextStyle(
@@ -98,6 +106,7 @@ class LoginScreen extends StatelessWidget {
 
               _buildInputLabel('Contraseña'),
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: '••••••••',
@@ -114,7 +123,10 @@ class LoginScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // TODO: Implementar recuperación de contraseña
+                    // context.push('/forgot-password');
+                  },
                   child: const Text(
                     '¿Olvidaste tu contraseña?',
                     style: TextStyle(
@@ -126,18 +138,71 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // --- BOTÓN PRINCIPAL ---
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text(
-                  'Iniciar Sesión',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryOrange,
-                  minimumSize: const Size(double.infinity, 60),
-                ),
+              // --- BOTÓN DE LOGIN CON BLOC ---
+              BlocConsumer<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthSuccess) {
+                    // ¡ÉXITO! Navegamos al Home
+                    context.go('/home');
+                  } else if (state is AuthError) {
+                    // Error: mostramos un SnackBar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is AuthLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryOrange,
+                      ),
+                    );
+                  }
+
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // En una app real, tomaríamos los datos de los controllers
+                        final email = emailController.text;
+                        final password = passwordController.text;
+
+                        // Validación básica
+                        if (email.isEmpty || password.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Por favor completa todos los campos',
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Llama al cubit para hacer login (datos hardcodeados por ahora)
+                        context.read<AuthCubit>().login(email, password);
+                      },
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text(
+                        'Iniciar Sesión',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryOrange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
 
               const SizedBox(height: 30),
@@ -158,18 +223,27 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // --- FACE ID ---
-              IconButton.filledTonal(
-                onPressed: () {},
-                icon: const Icon(Icons.face_retouching_natural, size: 32),
-                style: IconButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                  backgroundColor: Colors.white,
-                ),
-              ),
-              const Text(
-                'Face ID',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              // --- FACE ID / BIOMETRÍA ---
+              Column(
+                children: [
+                  IconButton.filledTonal(
+                    onPressed: () {
+                      // TODO: Implementar autenticación biométrica
+                      // context.read<AuthCubit>().loginWithBiometrics();
+                    },
+                    icon: const Icon(Icons.face_retouching_natural, size: 32),
+                    style: IconButton.styleFrom(
+                      padding: const EdgeInsets.all(16),
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppColors.primaryOrange,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Face ID',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 40),

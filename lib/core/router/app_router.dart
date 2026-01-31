@@ -1,0 +1,52 @@
+import 'package:dysch_mobile/presentation/screens/auth/login_screen.dart';
+import 'package:dysch_mobile/presentation/screens/home/home_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../presentation/screens/main/main_screen.dart';
+
+// Claves para la navegación
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
+class AppRouter {
+  static final router = GoRouter(
+    initialLocation: '/login',
+    navigatorKey: _rootNavigatorKey,
+    routes: [
+      // Ruta de Login (Fuera del menú principal)
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+
+      // Ruta con el Bottom Navigation Bar
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, state, child) {
+          return MainScreen(child: child); // El "cascarón" con el menú
+        },
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/horarios',
+            builder: (context, state) =>
+                const Center(child: Text('Mis Horarios')),
+          ),
+          GoRoute(
+            path: '/qr',
+            builder: (context, state) =>
+                const Center(child: Text('Escanear QR')),
+          ),
+          GoRoute(
+            path: '/nomina',
+            builder: (context, state) => const Center(child: Text('Mi Nómina')),
+          ),
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => const Center(child: Text('Mi Perfil')),
+          ),
+        ],
+      ),
+    ],
+  );
+}
