@@ -1,9 +1,6 @@
 import 'package:dysch_mobile/presentation/screens/home/widgets/home_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../logic/auth/auth_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,11 +22,11 @@ class HomeScreen extends StatelessWidget {
             const SliverToBoxAdapter(
               child: SectionTitle(title: 'Resumen Semanal'),
             ),
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
-                  children: const [
+                  children: [
                     Expanded(
                       child: SummaryCard(
                         icon: Icons.access_time_filled,
