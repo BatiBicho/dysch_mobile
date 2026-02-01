@@ -47,7 +47,7 @@ class AttendanceCard extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => context.go('/qr'),
+            onPressed: () => context.push('/qr'),
             icon: const Icon(Icons.fingerprint),
             label: const Text('REGISTRAR ENTRADA'),
             style: ElevatedButton.styleFrom(

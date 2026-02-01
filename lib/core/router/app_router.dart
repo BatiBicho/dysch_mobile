@@ -2,6 +2,7 @@ import 'package:dysch_mobile/presentation/screens/auth/login_screen.dart';
 import 'package:dysch_mobile/presentation/screens/home/home_screen.dart';
 import 'package:dysch_mobile/presentation/screens/payroll/payroll_screen.dart';
 import 'package:dysch_mobile/presentation/screens/qr_scanner/qr_scanner_screen.dart';
+import 'package:dysch_mobile/presentation/screens/request/request_absence_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/main/main_screen.dart';
@@ -35,10 +36,6 @@ class AppRouter {
                 const Center(child: Text('Mis Horarios')),
           ),
           GoRoute(
-            path: '/qr',
-            builder: (context, state) => const QrScannerScreen(),
-          ),
-          GoRoute(
             path: '/nomina',
             builder: (context, state) => const PayrollScreen(),
           ),
@@ -47,6 +44,15 @@ class AppRouter {
             builder: (context, state) => const Center(child: Text('Mi Perfil')),
           ),
         ],
+      ),
+      // Rutas sin Bottom Navigation Bar
+      GoRoute(
+        path: '/qr',
+        builder: (context, state) => const QrScannerScreen(),
+      ),
+      GoRoute(
+        path: '/request-absence',
+        builder: (context, state) => const RequestAbsenceScreen(),
       ),
     ],
   );

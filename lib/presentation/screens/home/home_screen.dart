@@ -64,6 +64,7 @@ class HomeScreen extends StatelessWidget {
                     label: 'Solicitar Permiso',
                     color: Colors.orange.shade100,
                     iconColor: Colors.orange,
+                    onTap: () => context.push('/request-absence'),
                   ),
                   QuickMenuCard(
                     icon: Icons.schedule,
