@@ -1,17 +1,15 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 class PayrollRepository {
   final Dio _dio = Dio();
 
-  Future<String?> downloadPayroll(
-    String periodId, {
-    bool openAfterDownload = true,
-  }) async {
+  // ✅ Cambio clave: Quitamos el openAfterDownload
+  Future<String?> downloadPayroll(String periodId) async {
     try {
-      // 1. Obtener ruta
+      // 1. Obtener ruta de almacenamiento
       final dir = await getApplicationDocumentsDirectory();
       final String savePath = "${dir.path}/nomina_$periodId.pdf";
 
@@ -19,80 +17,59 @@ class PayrollRepository {
       File file = File(savePath);
       if (await file.exists()) {
         print("📄 Archivo ya existe en: $savePath");
-        if (openAfterDownload) await OpenFile.open(savePath);
-        return savePath;
+        return savePath; // Solo retornamos la ruta, NO abrimos
       }
 
-      // 3. Descargar (URL REAL aquí)
+      // 3. Descargar
       await _dio.download(
-        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", // Tu URL real
         savePath,
         onReceiveProgress: (received, total) {
-          // Puedes usar un Stream o Callback para UI
           if (total != -1) {
-            final progress = (received / total * 100).toStringAsFixed(0);
-            print("📥 Descargando: $progress%");
+            print("Progreso: ${(received / total * 100).toStringAsFixed(0)}%");
           }
         },
       );
 
-      // 4. Verificar
+      // 4. Verificar que se descargó
       if (await file.exists()) {
         print("✅ Descarga completada: $savePath");
         print("📊 Tamaño: ${(await file.length()) ~/ 1024} KB");
-
-        // 5. Abrir automáticamente si se solicita
-        if (openAfterDownload) {
-          await OpenFile.open(savePath);
-        }
-
-        return savePath;
-      } else {
-        print("❌ Error: Archivo no creado después de descarga");
-        return null;
+        return savePath; // Solo retornamos la ruta
       }
+
+      return null;
     } catch (e) {
-      print("🚨 Error descargando nómina: $e");
+      print("🚨 Error descargando: $e");
       return null;
     }
   }
 
-  // Método adicional: Eliminar nómina descargada
-  Future<bool> deletePayroll(String periodId) async {
+  // Método separado para abrir archivo
+  Future<void> openPayrollFile(String filePath) async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final String filePath = "${dir.path}/nomina_$periodId.pdf";
       final file = File(filePath);
-
       if (await file.exists()) {
-        await file.delete();
-        print("🗑️ Nómina eliminada: $periodId");
-        return true;
+        final result = await OpenFile.open(filePath);
+        print("📂 Resultado al abrir: ${result.message}");
+      } else {
+        throw Exception('El archivo no existe');
       }
-      return false;
     } catch (e) {
-      print("Error eliminando nómina: $e");
-      return false;
+      print("❌ Error abriendo archivo: $e");
+      rethrow;
     }
   }
 
-  // Método adicional: Listar nóminas descargadas
-  Future<List<String>> listDownloadedPayrolls() async {
+  // Método para verificar si un archivo ya existe
+  Future<bool> payrollExists(String periodId) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
-      final directory = Directory(dir.path);
-      final files = await directory.list().toList();
-
-      return files
-          .where(
-            (file) =>
-                file.path.endsWith('.pdf') && file.path.contains('nomina_'),
-          )
-          .map((file) => file.path)
-          .toList();
+      final String savePath = "${dir.path}/nomina_$periodId.pdf";
+      final file = File(savePath);
+      return await file.exists();
     } catch (e) {
-      print("Error listando nóminas: $e");
-      return [];
+      return false;
     }
   }
 }

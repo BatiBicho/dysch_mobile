@@ -1,15 +1,18 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class HistoryPayrollItem extends StatelessWidget {
   final String dateRange;
   final String amount;
   final VoidCallback onDownload;
+  final bool isDownloading;
 
   const HistoryPayrollItem({
     super.key,
     required this.dateRange,
     required this.amount,
     required this.onDownload,
+    this.isDownloading = false,
   });
 
   @override
@@ -75,20 +78,31 @@ class HistoryPayrollItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: onDownload,
-            icon: const Icon(Icons.visibility_outlined, size: 18),
-            label: const Text('Ver recibo'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade50,
-              foregroundColor: Colors.black87,
-              elevation: 0,
-              minimumSize: const Size(double.infinity, 45),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          if (isDownloading)
+            Container(
+              width: 32,
+              height: 32,
+              padding: const EdgeInsets.all(6),
+              child: const CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.orange,
+              ),
+            )
+          else
+            ElevatedButton.icon(
+              onPressed: onDownload,
+              icon: const Icon(Icons.visibility_outlined, size: 18),
+              label: const Text('Ver recibo'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondaryOrange,
+                foregroundColor: Colors.black87,
+                elevation: 0,
+                minimumSize: const Size(double.infinity, 45),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
