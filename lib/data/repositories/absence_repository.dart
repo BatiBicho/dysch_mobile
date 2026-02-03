@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 
 class AbsenceRepository {
-  final Dio _dio = Dio(); // Aquí usarás tu DioClient configurado
+  final Dio _dio;
+
+  AbsenceRepository(this._dio);
 
   Future<bool> sendAbsenceRequest({
     required String type,

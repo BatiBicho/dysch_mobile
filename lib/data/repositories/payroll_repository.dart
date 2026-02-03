@@ -4,7 +4,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 
 class PayrollRepository {
-  final Dio _dio = Dio();
+  final Dio _dio;
+
+  PayrollRepository(this._dio);
 
   // ✅ Cambio clave: Quitamos el openAfterDownload
   Future<String?> downloadPayroll(String periodId) async {
