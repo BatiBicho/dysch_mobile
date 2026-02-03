@@ -63,7 +63,7 @@ class MainScreen extends StatelessWidget {
         context.go('/nomina');
         break;
       case 3:
-        context.go('/profile');
+        context.push('/profile');
         break;
     }
   }
