@@ -52,7 +52,7 @@ class LoginScreen extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.7),
+                            Colors.black.withValues(alpha: .7),
                           ],
                         ),
                       ),
@@ -94,11 +94,11 @@ class LoginScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'usuario@empresa.com',
                   hintStyle: TextStyle(
-                    color: AppColors.primaryOrange.withOpacity(0.5),
+                    color: AppColors.primaryOrange.withValues(alpha: .5),
                   ),
                   suffixIcon: Icon(
                     Icons.email_outlined,
-                    color: AppColors.primaryOrange.withOpacity(0.7),
+                    color: AppColors.primaryOrange.withValues(alpha: .7),
                   ),
                 ),
               ),
@@ -111,11 +111,11 @@ class LoginScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: '••••••••',
                   hintStyle: TextStyle(
-                    color: AppColors.primaryOrange.withOpacity(0.5),
+                    color: AppColors.primaryOrange.withValues(alpha: .5),
                   ),
                   suffixIcon: Icon(
                     Icons.visibility_outlined,
-                    color: AppColors.primaryOrange.withOpacity(0.7),
+                    color: AppColors.primaryOrange.withValues(alpha: .7),
                   ),
                 ),
               ),
@@ -206,52 +206,6 @@ class LoginScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 30),
-
-              // --- DIVIDER ---
-              Row(
-                children: [
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      'o ingresa con',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                    ),
-                  ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // --- FACE ID / BIOMETRÍA ---
-              Column(
-                children: [
-                  IconButton.filledTonal(
-                    onPressed: () {
-                      // TODO: Implementar autenticación biométrica
-                      // context.read<AuthCubit>().loginWithBiometrics();
-                    },
-                    icon: const Icon(Icons.face_retouching_natural, size: 32),
-                    style: IconButton.styleFrom(
-                      padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.primaryOrange,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Face ID',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 40),
-              const Text(
-                'DYSCH v1.0.2',
-                style: TextStyle(color: Colors.grey, fontSize: 10),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),

@@ -74,10 +74,11 @@ class HomeScreen extends StatelessWidget {
                     onTap: () => context.go('/horarios'),
                   ),
                   QuickMenuCard(
-                    icon: Icons.payments_outlined,
-                    label: 'Nómina',
+                    icon: Icons.history,
+                    label: 'Historial de Incidentes',
                     color: Colors.orange.shade100,
                     iconColor: Colors.orange,
+                    onTap: () => context.push('/history'),
                   ),
                   QuickMenuCard(
                     icon: Icons.beach_access,

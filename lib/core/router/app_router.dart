@@ -1,5 +1,6 @@
 import 'package:dysch_mobile/presentation/screens/auth/login_screen.dart';
 import 'package:dysch_mobile/presentation/screens/home/home_screen.dart';
+import 'package:dysch_mobile/presentation/screens/incedent_history/incedent_history_screen.dart';
 import 'package:dysch_mobile/presentation/screens/notifications/notification_screen.dart';
 import 'package:dysch_mobile/presentation/screens/payroll/payroll_screen.dart';
 import 'package:dysch_mobile/presentation/screens/profile/profile_screen.dart';
@@ -59,6 +60,10 @@ class AppRouter {
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => const IncidentHistoryScreen(),
       ),
     ],
   );
