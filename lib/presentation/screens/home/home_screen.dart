@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:dysch_mobile/presentation/screens/home/widgets/home_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +33,7 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.access_time_filled,
                         label: '38.5h',
                         subLabel: 'Trabajadas',
-                        color: Colors.blue,
+                        color: AppColors.info,
                       ),
                     ),
                     SizedBox(width: 16),
@@ -62,29 +63,29 @@ class HomeScreen extends StatelessWidget {
                   QuickMenuCard(
                     icon: Icons.edit_calendar,
                     label: 'Solicitar Permiso',
-                    color: Colors.orange.shade100,
-                    iconColor: Colors.orange,
+                    color: AppColors.warning.withValues(alpha: 0.1),
+                    iconColor: AppColors.warning,
                     onTap: () => context.push('/request-absence'),
                   ),
                   QuickMenuCard(
                     icon: Icons.schedule,
                     label: 'Mis Horarios',
-                    color: Colors.orange.shade100,
-                    iconColor: Colors.orange,
+                    color: AppColors.warning.withValues(alpha: 0.1),
+                    iconColor: AppColors.warning,
                     onTap: () => context.go('/horarios'),
                   ),
                   QuickMenuCard(
                     icon: Icons.history,
                     label: 'Historial de Incidentes',
-                    color: Colors.orange.shade100,
-                    iconColor: Colors.orange,
+                    color: AppColors.warning.withValues(alpha: 0.1),
+                    iconColor: AppColors.warning,
                     onTap: () => context.push('/history'),
                   ),
                   QuickMenuCard(
                     icon: Icons.beach_access,
                     label: 'Vacaciones',
-                    color: Colors.orange.shade100,
-                    iconColor: Colors.orange,
+                    color: AppColors.warning.withValues(alpha: 0.1),
+                    iconColor: AppColors.warning,
                     onTap: () => context.push('/vacations'),
                   ),
                 ],

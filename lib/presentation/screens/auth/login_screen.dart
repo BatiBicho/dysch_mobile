@@ -13,7 +13,7 @@ class LoginScreen extends StatelessWidget {
     final passwordController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceBackground,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -25,7 +25,7 @@ class LoginScreen extends StatelessWidget {
               const Text(
                 'DYSCH',
                 style: TextStyle(
-                  color: AppColors.primaryOrange,
+                  color: AppColors.primary,
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.5,
@@ -66,7 +66,7 @@ class LoginScreen extends StatelessWidget {
                           Text(
                             'Bienvenido de nuevo',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.onPrimary,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
@@ -74,7 +74,7 @@ class LoginScreen extends StatelessWidget {
                           Text(
                             'Gestiona tu nómina y asistencia',
                             style: TextStyle(
-                              color: Colors.white70,
+                              color: AppColors.onPrimary,
                               fontSize: 14,
                             ),
                           ),
@@ -94,11 +94,11 @@ class LoginScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'usuario@empresa.com',
                   hintStyle: TextStyle(
-                    color: AppColors.primaryOrange.withValues(alpha: .5),
+                    color: AppColors.primary.withValues(alpha: .5),
                   ),
                   suffixIcon: Icon(
                     Icons.email_outlined,
-                    color: AppColors.primaryOrange.withValues(alpha: .7),
+                    color: AppColors.primary.withValues(alpha: .7),
                   ),
                 ),
               ),
@@ -111,11 +111,11 @@ class LoginScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: '••••••••',
                   hintStyle: TextStyle(
-                    color: AppColors.primaryOrange.withValues(alpha: .5),
+                    color: AppColors.primary.withValues(alpha: .5),
                   ),
                   suffixIcon: Icon(
                     Icons.visibility_outlined,
-                    color: AppColors.primaryOrange.withValues(alpha: .7),
+                    color: AppColors.primary.withValues(alpha: .7),
                   ),
                 ),
               ),
@@ -123,14 +123,11 @@ class LoginScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {
-                    // TODO: Implementar recuperación de contraseña
-                    // context.push('/forgot-password');
-                  },
+                  onPressed: () {},
                   child: const Text(
                     '¿Olvidaste tu contraseña?',
                     style: TextStyle(
-                      color: AppColors.primaryOrange,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -149,7 +146,7 @@ class LoginScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.message),
-                        backgroundColor: Colors.red,
+                        backgroundColor: AppColors.error,
                       ),
                     );
                   }
@@ -158,7 +155,7 @@ class LoginScreen extends StatelessWidget {
                   if (state is AuthLoading) {
                     return const Center(
                       child: CircularProgressIndicator(
-                        color: AppColors.primaryOrange,
+                        color: AppColors.primary,
                       ),
                     );
                   }
@@ -167,24 +164,21 @@ class LoginScreen extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // En una app real, tomaríamos los datos de los controllers
                         final email = emailController.text;
                         final password = passwordController.text;
 
-                        // Validación básica
                         if (email.isEmpty || password.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text(
                                 'Por favor completa todos los campos',
                               ),
-                              backgroundColor: Colors.red,
+                              backgroundColor: AppColors.error,
                             ),
                           );
                           return;
                         }
 
-                        // Llama al cubit para hacer login (datos hardcodeados por ahora)
                         context.read<AuthCubit>().login(email, password);
                       },
                       icon: const Icon(Icons.arrow_forward),
@@ -193,7 +187,7 @@ class LoginScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryOrange,
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -222,7 +216,7 @@ class LoginScreen extends StatelessWidget {
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 14,
-          color: AppColors.textPrimary,
+          color: AppColors.onBackground,
         ),
       ),
     );

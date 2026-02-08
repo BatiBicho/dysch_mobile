@@ -227,7 +227,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
                     Switch(
                       value: _isFullDay,
                       onChanged: (val) => setState(() => _isFullDay = val),
-                      activeThumbColor: const Color(0xFFFF7043),
+                      activeThumbColor: AppColors.primary,
                     ),
                   ],
                 ),
@@ -315,7 +315,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
                             value: totalSize / _maxTotalSize,
                             backgroundColor: Colors.grey[300],
                             color: totalSize > _maxTotalSize * 0.8
-                                ? Colors.orange
+                                ? AppColors.primary
                                 : Colors.green,
                             minHeight: 4,
                           ),
@@ -352,7 +352,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
                   style: TextStyle(fontSize: 16),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryOrange,
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -386,7 +386,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
               const Icon(
                 Icons.calendar_month,
                 size: 18,
-                color: Color(0xFFFF7043),
+                color: AppColors.primary,
               ),
             ],
           ),
@@ -413,7 +413,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _circleIcon(Icons.camera_alt, const Color(0xFFFF7043)),
+              _circleIcon(Icons.camera_alt, AppColors.primary),
               const SizedBox(width: 16),
               _circleIcon(Icons.attach_file, Colors.grey),
             ],
@@ -569,7 +569,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
               ],
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -578,7 +578,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: .1),
         shape: BoxShape.circle,
       ),
       child: Icon(icon, color: color),

@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class VacationCalendarView extends StatelessWidget {
@@ -79,7 +80,7 @@ class VacationCalendarView extends StatelessWidget {
       width: 40,
       height: 35,
       decoration: BoxDecoration(
-        color: const Color(0xFFFF7043),
+        color: AppColors.primary,
         borderRadius: BorderRadius.horizontal(
           left: Radius.circular(isStart ? 12 : 0),
           right: Radius.circular(isEnd ? 12 : 0),

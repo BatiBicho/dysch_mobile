@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class VacationSummaryCard extends StatelessWidget {
@@ -32,7 +33,7 @@ class VacationSummaryCard extends StatelessWidget {
                   strokeWidth: 12,
                   backgroundColor: Colors.grey.withValues(alpha: 0.1),
                   valueColor: const AlwaysStoppedAnimation<Color>(
-                    Color(0xFFFF7043),
+                    AppColors.primary,
                   ),
                   strokeCap: StrokeCap.round,
                 ),
@@ -60,7 +61,7 @@ class VacationSummaryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStat('Acumulados', '14', Colors.black),
-              _buildStat('Usados', '2', const Color(0xFFFF7043)),
+              _buildStat('Usados', '2', AppColors.primary),
               _buildStat('Pendientes', '0', Colors.black),
             ],
           ),

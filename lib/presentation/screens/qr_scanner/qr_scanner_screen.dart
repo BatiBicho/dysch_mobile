@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:go_router/go_router.dart';
@@ -96,7 +97,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: Color(0xFFFF7043)),
+            CircularProgressIndicator(color: AppColors.primary),
             SizedBox(height: 16),
             Text("Validando entrada..."),
           ],

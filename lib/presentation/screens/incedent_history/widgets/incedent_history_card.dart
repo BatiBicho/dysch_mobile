@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class IncidentHistoryCard extends StatelessWidget {
@@ -31,7 +32,10 @@ class IncidentHistoryCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
         border: supervisorResponse != null
-            ? Border.all(color: Colors.red.withValues(alpha: 0.2), width: 1)
+            ? Border.all(
+                color: AppColors.error.withValues(alpha: 0.2),
+                width: 1,
+              )
             : null,
       ),
       child: Column(
@@ -125,7 +129,7 @@ class IncidentHistoryCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.picture_as_pdf, color: Colors.red, size: 20),
+          const Icon(Icons.picture_as_pdf, color: AppColors.error, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -147,7 +151,7 @@ class IncidentHistoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.05),
+        color: AppColors.error.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -155,12 +159,12 @@ class IncidentHistoryCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.info, color: Colors.red, size: 16),
+              Icon(Icons.info, color: AppColors.error, size: 16),
               SizedBox(width: 8),
               Text(
                 'Respuesta del Supervisor',
                 style: TextStyle(
-                  color: Colors.red,
+                  color: AppColors.error,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),

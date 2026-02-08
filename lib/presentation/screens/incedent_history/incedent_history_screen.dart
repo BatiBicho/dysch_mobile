@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:dysch_mobile/presentation/screens/incedent_history/widgets/incedent_history_card.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +26,9 @@ class IncidentHistoryScreen extends StatelessWidget {
             ),
           ],
           bottom: const TabBar(
-            indicatorColor: Color(0xFFFF7043),
+            indicatorColor: AppColors.primary,
             indicatorWeight: 3,
-            labelColor: Color(0xFFFF7043),
+            labelColor: AppColors.primary,
             unselectedLabelColor: Colors.grey,
             labelStyle: TextStyle(fontWeight: FontWeight.bold),
             tabs: [
@@ -46,7 +47,7 @@ class IncidentHistoryScreen extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
-          backgroundColor: const Color(0xFFFF7043),
+          backgroundColor: AppColors.primary,
           child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
@@ -65,7 +66,7 @@ class IncidentHistoryScreen extends StatelessWidget {
           description:
               'Solicito permiso para ausentarme por motivos personales familiares.',
           icon: Icons.calendar_today,
-          baseColor: Colors.orange,
+          baseColor: AppColors.warning,
         ),
         const IncidentHistoryCard(
           title: 'Incapacidad Médica',
@@ -73,7 +74,7 @@ class IncidentHistoryScreen extends StatelessWidget {
           status: 'En Revisión',
           description: 'Adjunto justificante médico del IMSS.',
           icon: Icons.medical_services,
-          baseColor: Colors.blue,
+          baseColor: AppColors.info,
           attachmentName: 'Justificante_IMSS_Oct.pdf',
         ),
         _buildSectionHeader('SEPTIEMBRE 2023'),
@@ -83,7 +84,7 @@ class IncidentHistoryScreen extends StatelessWidget {
           status: 'Rechazada',
           description: 'Viaje familiar planeado con anticipación.',
           icon: Icons.beach_access,
-          baseColor: Colors.red,
+          baseColor: AppColors.error,
           supervisorResponse:
               'Lo siento, necesitamos cobertura completa durante el cierre de mes. Por favor reagenda para Octubre.',
         ),

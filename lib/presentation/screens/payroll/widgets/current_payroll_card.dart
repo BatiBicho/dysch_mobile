@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CurrentPayrollCard extends StatelessWidget {
@@ -11,7 +12,10 @@ class CurrentPayrollCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+          ),
         ],
       ),
       child: Column(
@@ -33,13 +37,13 @@ class CurrentPayrollCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
                   '• EN PROCESO',
                   style: TextStyle(
-                    color: Colors.orange,
+                    color: AppColors.primary,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -74,7 +78,7 @@ class CurrentPayrollCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
-                    color: Colors.orange,
+                    color: AppColors.primary,
                   ),
                 ),
                 TextSpan(

@@ -85,7 +85,7 @@ class HistoryPayrollItem extends StatelessWidget {
               padding: const EdgeInsets.all(6),
               child: const CircularProgressIndicator(
                 strokeWidth: 2,
-                color: Colors.orange,
+                color: AppColors.primary,
               ),
             )
           else
@@ -94,7 +94,7 @@ class HistoryPayrollItem extends StatelessWidget {
               icon: const Icon(Icons.visibility_outlined, size: 18),
               label: const Text('Ver recibo'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondaryOrange,
+                backgroundColor: AppColors.primaryContainer,
                 foregroundColor: Colors.black87,
                 elevation: 0,
                 minimumSize: const Size(double.infinity, 45),

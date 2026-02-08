@@ -25,14 +25,12 @@ class WeeklyCalendarStrip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isSelected
-            ? AppColors.primaryOrange
-            : AppColors.surfaceBackground,
+        color: isSelected ? AppColors.primary : AppColors.background,
         borderRadius: BorderRadius.circular(24),
         boxShadow: isSelected
             ? [
                 BoxShadow(
-                  color: AppColors.primaryOrange.withValues(alpha: 0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),

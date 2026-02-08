@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:dysch_mobile/data/repositories/payroll_repository.dart';
 import 'package:flutter/material.dart';
 import 'widgets/current_payroll_card.dart';
@@ -37,7 +38,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
                   onPressed: () {},
                   child: const Text(
                     'Ver todo',
-                    style: TextStyle(color: Colors.orange),
+                    style: TextStyle(color: AppColors.primary),
                   ),
                 ),
               ],
@@ -66,7 +67,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
     if (_isDownloading) {
       _showSnackBar(
         'Espera a que termine la descarga actual',
-        Colors.orange,
+        AppColors.primary,
         duration: 3,
       );
       return;
@@ -139,9 +140,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
           },
         ),
         // Callback cuando se cierra automáticamente
-        onVisible: () {
-          print('SnackBar visible - se cerrará en 8 segundos');
-        },
+        onVisible: () {},
       ),
     );
 
@@ -181,7 +180,7 @@ class _PayrollScreenState extends State<PayrollScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             child: const Text('ABRIR'),
           ),
         ],

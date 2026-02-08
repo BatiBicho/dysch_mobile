@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'widgets/vacation_summary_card.dart';
 import 'widgets/vacation_calendar_view.dart';
@@ -53,7 +54,7 @@ class VacationsScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: const Color(0xFFFF7043),
+        backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white, size: 30),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class NotificationItem extends StatelessWidget {
@@ -65,7 +66,7 @@ class NotificationItem extends StatelessWidget {
                     Text(
                       time,
                       style: TextStyle(
-                        color: Colors.orange.withValues(alpha: 0.6),
+                        color: AppColors.primary.withValues(alpha: 0.6),
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -77,7 +78,7 @@ class NotificationItem extends StatelessWidget {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Colors.orange,
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
                       ),

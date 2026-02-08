@@ -14,7 +14,10 @@ class AttendanceCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
+          ),
         ],
       ),
       child: Column(
@@ -51,7 +54,7 @@ class AttendanceCard extends StatelessWidget {
             icon: const Icon(Icons.fingerprint),
             label: const Text('REGISTRAR ENTRADA'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryOrange,
+              backgroundColor: AppColors.primary,
               minimumSize: const Size(double.infinity, 60),
             ),
           ),

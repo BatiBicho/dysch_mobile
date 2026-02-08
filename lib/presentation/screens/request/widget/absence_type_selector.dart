@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AbsenceTypeSelector extends StatelessWidget {
@@ -34,7 +35,7 @@ class AbsenceTypeSelector extends StatelessWidget {
               ),
               selected: isSelected,
               onSelected: (_) => onSelected(t['label'] as String),
-              selectedColor: const Color(0xFFFF7043),
+              selectedColor: AppColors.primary,
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : Colors.black87,
               ),

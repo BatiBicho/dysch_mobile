@@ -78,8 +78,8 @@ class CurrentShiftCard extends StatelessWidget {
               style: TextStyle(fontSize: 12),
             ),
             trailing: CircleAvatar(
-              backgroundColor: AppColors.surfaceBackground,
-              child: Icon(Icons.near_me, color: AppColors.primaryOrange),
+              backgroundColor: AppColors.background,
+              child: Icon(Icons.near_me, color: AppColors.primary),
             ),
           ),
         ],

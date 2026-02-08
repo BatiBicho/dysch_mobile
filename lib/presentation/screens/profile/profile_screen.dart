@@ -1,3 +1,4 @@
+import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:dysch_mobile/presentation/screens/profile/profile_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -52,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
               child: const Text(
                 'ID: MX-89201',
                 style: TextStyle(
-                  color: Colors.orange,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -66,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.person_outline,
                 title: 'Datos Personales',
                 subtitle: 'Email, Teléfono, Dirección',
-                iconColor: Colors.orange,
+                iconColor: AppColors.primary,
                 onTap: () {},
               ),
               ProfileMenuItem(
@@ -148,7 +149,7 @@ class ProfileScreen extends StatelessWidget {
     trailing: Switch(
       value: value,
       onChanged: (v) {},
-      activeColor: Colors.orange,
+      activeThumbColor: AppColors.primary,
     ),
   );
 }

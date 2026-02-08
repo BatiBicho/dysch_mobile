@@ -27,7 +27,7 @@ class NotificationsScreen extends StatelessWidget {
               backgroundColor: Colors.white,
               child: Icon(
                 Icons.done_all,
-                color: AppColors.primaryOrange.withValues(alpha: 0.8),
+                color: AppColors.primary.withValues(alpha: 0.8),
               ),
             ),
           ),
@@ -64,7 +64,7 @@ class NotificationsScreen extends StatelessWidget {
                           'Sin leer  3',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primaryOrange,
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
@@ -107,7 +107,7 @@ class NotificationsScreen extends StatelessWidget {
                   ),
                   child: const NotificationItem(
                     icon: Icons.access_time_filled,
-                    iconColor: AppColors.primaryOrange,
+                    iconColor: AppColors.primary,
                     title: 'Recordatorio de Entrada',
                     time: 'Hace 5 min',
                     isUnread: true,
