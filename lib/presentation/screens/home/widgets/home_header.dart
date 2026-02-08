@@ -49,7 +49,9 @@ class HomeHeader extends StatelessWidget {
           const Spacer(),
           // Icono Notificación
           IconButton.filledTonal(
-            onPressed: () {},
+            onPressed: () {
+              context.push('/notifications');
+            },
             icon: const Badge(child: Icon(Icons.notifications_none)),
           ),
         ],
