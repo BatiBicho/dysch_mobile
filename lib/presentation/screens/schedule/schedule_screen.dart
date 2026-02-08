@@ -1,112 +1,68 @@
-import 'package:dysch_mobile/data/models/schedule_model.dart';
-import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
-import 'package:dysch_mobile/presentation/screens/schedule/logic/schedule_cubit.dart';
+import 'package:dysch_mobile/presentation/screens/schedule/widgets/weekly_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart'; // Para formatear fechas
+import 'widgets/current_shift_card.dart';
+import 'widgets/upcoming_shift_item.dart';
 
-class ScheduleScreen extends StatelessWidget {
-  const ScheduleScreen({super.key});
+class SchedulesScreen extends StatelessWidget {
+  const SchedulesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ScheduleCubit(ScheduleRepository())..loadSchedules(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Mis Horarios',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: false,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
+      appBar: AppBar(
+        title: const Text(
+          'My Schedules',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: BlocBuilder<ScheduleCubit, ScheduleState>(
-          builder: (context, state) {
-            if (state is ScheduleLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: Color(0xFFFF7043)),
-              );
-            } else if (state is ScheduleLoaded) {
-              return ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.schedules.length,
-                itemBuilder: (context, index) {
-                  final item = state.schedules[index];
-                  return _ScheduleCard(schedule: item);
-                },
-              );
-            }
-            return const Center(child: Text("Error al cargar"));
-          },
-        ),
+        centerTitle: true,
+        actions: [
+          IconButton(icon: const Icon(Icons.calendar_month), onPressed: () {}),
+        ],
       ),
-    );
-  }
-}
-
-class _ScheduleCard extends StatelessWidget {
-  final ScheduleModel schedule;
-  const _ScheduleCard({required this.schedule});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
+      body: const SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Círculo con el día del mes
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFEBE5),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    DateFormat('MMM').format(schedule.date).toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFF7043),
-                    ),
-                  ),
-                  Text(
-                    schedule.date.day.toString(),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+            WeeklyCalendarStrip(),
+
+            // Sección: Turno de hoy
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                "Today's Shift",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(width: 20),
-            // Información del turno
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    schedule.position,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "${schedule.startTime} - ${schedule.endTime}",
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ],
+            CurrentShiftCard(),
+
+            // Sección: Próximos
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Text(
+                "Upcoming",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.grey),
+            UpcomingShiftItem(
+              day: 'THU',
+              date: '26',
+              title: '08:00 AM - 05:00 PM',
+              subtitle: 'Sucursal Norte',
+            ),
+            UpcomingShiftItem(
+              day: 'FRI',
+              date: '27',
+              title: '09:00 AM - 06:00 PM',
+              subtitle: 'Sucursal Centro',
+            ),
+            UpcomingShiftItem(
+              day: 'SAT',
+              date: '28',
+              title: 'Descanso',
+              subtitle: 'Rest Day',
+              isRestDay: true,
+            ),
           ],
         ),
       ),

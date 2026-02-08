@@ -4,6 +4,7 @@ import 'package:dysch_mobile/presentation/screens/payroll/payroll_screen.dart';
 import 'package:dysch_mobile/presentation/screens/profile/profile_screen.dart';
 import 'package:dysch_mobile/presentation/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:dysch_mobile/presentation/screens/request/request_absence_screen.dart';
+import 'package:dysch_mobile/presentation/screens/schedule/schedule_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/main/main_screen.dart';
@@ -33,8 +34,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/horarios',
-            builder: (context, state) =>
-                const Center(child: Text('Mis Horarios')),
+            builder: (context, state) => const SchedulesScreen(),
           ),
           GoRoute(
             path: '/nomina',
