@@ -1,24 +1,24 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dysch_mobile/core/api/dio_client.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 
 class PayrollRepository {
   final Dio _dio;
+  final logger = Logger();
 
-  PayrollRepository(this._dio);
+  PayrollRepository([Dio? dio]) : _dio = dio ?? DioClient.instance;
 
-  // ✅ Cambio clave: Quitamos el openAfterDownload
   Future<String?> downloadPayroll(String periodId) async {
     try {
-      // 1. Obtener ruta de almacenamiento
       final dir = await getApplicationDocumentsDirectory();
       final String savePath = "${dir.path}/nomina_$periodId.pdf";
 
-      // 2. Verificar si ya existe
       File file = File(savePath);
       if (await file.exists()) {
-        print("📄 Archivo ya existe en: $savePath");
+        logger.d("📄 Archivo ya existe en: $savePath");
         return savePath; // Solo retornamos la ruta, NO abrimos
       }
 
@@ -28,21 +28,21 @@ class PayrollRepository {
         savePath,
         onReceiveProgress: (received, total) {
           if (total != -1) {
-            print("Progreso: ${(received / total * 100).toStringAsFixed(0)}%");
+            logger.d("Progreso: ${(received / total * 100).toStringAsFixed(0)}%");
           }
         },
       );
 
       // 4. Verificar que se descargó
       if (await file.exists()) {
-        print("✅ Descarga completada: $savePath");
-        print("📊 Tamaño: ${(await file.length()) ~/ 1024} KB");
+        logger.d("✅ Descarga completada: $savePath");
+        logger.d("📊 Tamaño: ${(await file.length()) ~/ 1024} KB");
         return savePath; // Solo retornamos la ruta
       }
 
       return null;
     } catch (e) {
-      print("🚨 Error descargando: $e");
+      logger.d("🚨 Error descargando: $e");
       return null;
     }
   }
@@ -53,12 +53,12 @@ class PayrollRepository {
       final file = File(filePath);
       if (await file.exists()) {
         final result = await OpenFile.open(filePath);
-        print("📂 Resultado al abrir: ${result.message}");
+        logger.d("📂 Resultado al abrir: ${result.message}");
       } else {
         throw Exception('El archivo no existe');
       }
     } catch (e) {
-      print("❌ Error abriendo archivo: $e");
+      logger.d("❌ Error abriendo archivo: $e");
       rethrow;
     }
   }
