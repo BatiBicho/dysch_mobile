@@ -7,6 +7,7 @@ import 'package:dysch_mobile/presentation/screens/profile/profile_screen.dart';
 import 'package:dysch_mobile/presentation/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:dysch_mobile/presentation/screens/request/request_absence_screen.dart';
 import 'package:dysch_mobile/presentation/screens/schedule/schedule_screen.dart';
+import 'package:dysch_mobile/presentation/screens/vacations/vacations_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/main/main_screen.dart';
@@ -64,6 +65,10 @@ class AppRouter {
       GoRoute(
         path: '/history',
         builder: (context, state) => const IncidentHistoryScreen(),
+      ),
+      GoRoute(
+        path: '/vacations',
+        builder: (context, state) => const VacationsScreen(),
       ),
     ],
   );

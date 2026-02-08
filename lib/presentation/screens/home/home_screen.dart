@@ -85,6 +85,7 @@ class HomeScreen extends StatelessWidget {
                     label: 'Vacaciones',
                     color: Colors.orange.shade100,
                     iconColor: Colors.orange,
+                    onTap: () => context.push('/vacations'),
                   ),
                 ],
               ),
