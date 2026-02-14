@@ -1,3 +1,6 @@
+import 'package:dysch_mobile/core/api/dio_client.dart';
+import 'package:dysch_mobile/core/services/storage_service.dart';
+import 'package:dysch_mobile/data/repositories/user_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract class AuthState {}
@@ -17,26 +20,37 @@ class AuthError extends AuthState {
 }
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthInitial());
+  final UserRepository userRepository;
+  final StorageService storageService;
+
+  AuthCubit(this.userRepository, this.storageService) : super(AuthInitial());
 
   void login(String email, String password) async {
+    if (email.isEmpty || password.isEmpty) {
+      emit(AuthError("Por favor, llena todos los campos"));
+      return;
+    }
+
     emit(AuthLoading());
 
-    // Simulación de validación (Mock)
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final user = await userRepository.loginUser(email, password);
 
-    if (email == "admin@dysch.com" && password == "123456") {
-      emit(AuthSuccess("ID-999"));
-    } else {
-      emit(
-        AuthError(
-          "Credenciales incorrectas. Intenta con admin@dysch.com / 123456",
-        ),
-      );
+      final String token = user.token;
+      final String userId = user.id;
+
+      await storageService.saveToken(token);
+      await storageService.saveUserId(userId);
+
+      DioClient.setAuthToken(user.token);
+      emit(AuthSuccess(userId));
+    } catch (e) {
+      emit(AuthError(e.toString().replaceAll("Exception: ", "")));
     }
   }
 
-  void logout() {
+  void logout() async {
+    await storageService.clearAll();
     emit(AuthInitial());
   }
 }

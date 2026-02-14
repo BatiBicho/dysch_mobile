@@ -152,49 +152,16 @@ class LoginScreen extends StatelessWidget {
                   }
                 },
                 builder: (context, state) {
-                  if (state is AuthLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                      ),
-                    );
-                  }
-
-                  return SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        final email = emailController.text;
-                        final password = passwordController.text;
-
-                        if (email.isEmpty || password.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Por favor completa todos los campos',
-                              ),
-                              backgroundColor: AppColors.error,
-                            ),
-                          );
-                          return;
-                        }
-
-                        context.read<AuthCubit>().login(email, password);
-                      },
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text(
-                        'Iniciar Sesión',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
+                  return ElevatedButton(
+                    onPressed: state is AuthLoading
+                        ? null
+                        : () => context.read<AuthCubit>().login(
+                            emailController.text,
+                            passwordController.text,
+                          ),
+                    child: state is AuthLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text("Entrar"),
                   );
                 },
               ),

@@ -6,15 +6,32 @@ class UserRepository {
 
   UserRepository(this._dio);
 
-  Future<UserModel> getUser(String id) async {
-    final response = await _dio.get('https://api.dysch.com/users/$id');
-    return UserModel.fromJson(response.data);
+  Future<UserModel> loginUser(String email, String password) async {
+    try {
+      final response = await _dio.post(
+        '/users/auth/login/',
+        data: {'email': email, 'password': password},
+      );
+
+      //return response.data;
+      return UserModel.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage =
+          e.response?.data['non_field_errors'] ?? 'Error al iniciar sesión';
+      throw Exception(errorMessage);
+    }
   }
 
-  Future<void> updateUser(UserModel user) async {
-    await _dio.patch(
-      'https://api.dysch.com/users/${user.id}',
-      data: user.toJson(),
-    );
+  Future<UserModel> getUser(String userId) async {
+    try {
+      final response = await _dio.get('/users/$userId/');
+
+      return response.data;
+      //return UserModel.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage =
+          e.response?.data['non_field_errors'] ?? 'Error al iniciar sesión';
+      throw Exception(errorMessage);
+    }
   }
 }
