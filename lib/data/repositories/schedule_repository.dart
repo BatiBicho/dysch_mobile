@@ -1,27 +1,20 @@
+import 'package:dio/dio.dart';
 import 'package:dysch_mobile/data/models/schedule_model.dart';
 
 class ScheduleRepository {
-  Future<List<ScheduleModel>> getSchedules() async {
-    // Simulamos latencia de red
-    await Future.delayed(const Duration(seconds: 2));
+  final Dio _dio;
 
-    // Datos de prueba (Hardcoded)
-    return [
-      ScheduleModel(
-        id: '1',
-        date: DateTime.now(),
-        startTime: '08:00 AM',
-        endTime: '04:00 PM',
-        position: 'Supervisor de Turno',
-        isConfirmed: true,
-      ),
-      ScheduleModel(
-        id: '2',
-        date: DateTime.now().add(const Duration(days: 1)),
-        startTime: '09:00 AM',
-        endTime: '05:00 PM',
-        position: 'Supervisor de Turno',
-      ),
-    ];
+  ScheduleRepository(this._dio);
+
+  Future<ScheduleModel> getSchedule() async {
+    try {
+      final response = await _dio.get('/schedules/schedules/');
+
+      return ScheduleModel.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage =
+          e.response?.data['detail'] ?? 'Error al iniciar sesión';
+      throw Exception(errorMessage);
+    }
   }
 }

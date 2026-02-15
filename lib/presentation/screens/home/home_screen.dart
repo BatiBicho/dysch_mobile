@@ -1,6 +1,10 @@
 import 'package:dysch_mobile/core/theme/app_colors.dart';
+import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
+import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
+import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:dysch_mobile/presentation/screens/home/widgets/home_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -8,16 +12,32 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((AuthCubit cubit) {
+      if (cubit.state is AuthSuccess) {
+        return (cubit.state as AuthSuccess).user;
+      }
+      return null;
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F3F6), // Fondo grisáceo suave
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             // 1. Header: Perfil y Notificaciones
-            const SliverToBoxAdapter(child: HomeHeader()),
+            SliverToBoxAdapter(
+              child: HomeHeader(name: user?.name ?? 'Usuario'),
+            ),
 
             // 2. Tarjeta de Registro de Entrada (Reloj)
-            const SliverToBoxAdapter(child: AttendanceCard()),
+            SliverToBoxAdapter(
+              child: BlocProvider<ScheduleCubit>(
+                create: (context) => ScheduleCubit(
+                  RepositoryProvider.of<ScheduleRepository>(context),
+                )..getSchedule(), // 👈 IMPORTANTE: Llama al método inmediatamente
+                child: const AttendanceCard(),
+              ),
+            ),
 
             // 3. Resumen Semanal
             const SliverToBoxAdapter(

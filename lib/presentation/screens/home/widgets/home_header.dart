@@ -2,9 +2,17 @@ import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+  final String name;
+  const HomeHeader({super.key, required this.name});
+
+  String _getFormattedDate() {
+    final now = DateTime.now();
+    final formatter = DateFormat('d MMMM yyyy');
+    return formatter.format(now);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +44,15 @@ class HomeHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '¡Hola, Juan!',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                '¡Hola, $name!',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
-                'Jueves, 24 Oct',
+                _getFormattedDate(),
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
             ],

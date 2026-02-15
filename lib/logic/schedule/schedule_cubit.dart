@@ -5,11 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // Estados
 abstract class ScheduleState {}
 
+class ScheduleInitial extends ScheduleState {}
+
 class ScheduleLoading extends ScheduleState {}
 
-class ScheduleLoaded extends ScheduleState {
-  final List<ScheduleModel> schedules;
-  ScheduleLoaded(this.schedules);
+class ScheduleSuccess extends ScheduleState {
+  final ScheduleModel schedules;
+  ScheduleSuccess(this.schedules);
 }
 
 class ScheduleError extends ScheduleState {
@@ -21,15 +23,17 @@ class ScheduleError extends ScheduleState {
 class ScheduleCubit extends Cubit<ScheduleState> {
   final ScheduleRepository repository;
 
-  ScheduleCubit(this.repository) : super(ScheduleLoading());
+  ScheduleCubit(this.repository) : super(ScheduleInitial());
 
-  void loadSchedules() async {
+  void getSchedule() async {
+    if (state is ScheduleLoading) return;
+
     try {
       emit(ScheduleLoading());
-      final data = await repository.getSchedules();
-      emit(ScheduleLoaded(data));
+      final data = await repository.getSchedule();
+      emit(ScheduleSuccess(data));
     } catch (e) {
-      emit(ScheduleError("No se pudieron cargar los horarios"));
+      emit(ScheduleError(e.toString().replaceAll("Exception: ", "")));
     }
   }
 }

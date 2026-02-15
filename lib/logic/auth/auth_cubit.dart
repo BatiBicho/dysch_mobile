@@ -1,5 +1,6 @@
 import 'package:dysch_mobile/core/api/dio_client.dart';
 import 'package:dysch_mobile/core/services/storage_service.dart';
+import 'package:dysch_mobile/data/models/user_model.dart';
 import 'package:dysch_mobile/data/repositories/user_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,8 +11,8 @@ class AuthInitial extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthSuccess extends AuthState {
-  final String userId;
-  AuthSuccess(this.userId);
+  final UserModel user;
+  AuthSuccess(this.user);
 }
 
 class AuthError extends AuthState {
@@ -26,7 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this.userRepository, this.storageService) : super(AuthInitial());
 
   void login(String email, String password) async {
-    if (email.isEmpty || password.isEmpty) {
+    if (email.trim().isEmpty || password.trim().isEmpty) {
       emit(AuthError("Por favor, llena todos los campos"));
       return;
     }
@@ -38,12 +39,18 @@ class AuthCubit extends Cubit<AuthState> {
 
       final String token = user.token;
       final String userId = user.id;
+      final String userRole = user.role;
+
+      if (userRole != 'EMPLOYEE') {
+        emit(AuthError("Solo los empleados pueden iniciar sesión"));
+        return;
+      }
 
       await storageService.saveToken(token);
       await storageService.saveUserId(userId);
 
       DioClient.setAuthToken(user.token);
-      emit(AuthSuccess(userId));
+      emit(AuthSuccess(user));
     } catch (e) {
       emit(AuthError(e.toString().replaceAll("Exception: ", "")));
     }
