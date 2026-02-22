@@ -14,9 +14,27 @@ class AbsenceTypeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final types = [
-      {'label': 'Permiso personal', 'icon': Icons.person},
-      {'label': 'Cita médica', 'icon': Icons.medical_services},
-      {'label': 'Viaje', 'icon': Icons.flight},
+      {
+        'label': 'SICK_LEAVE',
+        'display': 'Incapacidad',
+        'icon': Icons.medical_services,
+      },
+      {
+        'label': 'VACATION',
+        'display': 'Vacaciones',
+        'icon': Icons.beach_access,
+      },
+      {'label': 'PERMIT', 'display': 'Permiso', 'icon': Icons.person},
+      {
+        'label': 'WORK_ACCIDENT',
+        'display': 'Accidente Laboral',
+        'icon': Icons.warning,
+      },
+      {
+        'label': 'UNEXCUSED',
+        'display': 'Sin Justificación',
+        'icon': Icons.cancel,
+      },
     ];
 
     return SingleChildScrollView(
@@ -27,7 +45,7 @@ class AbsenceTypeSelector extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(t['label'] as String),
+              label: Text(t['display'] as String),
               avatar: Icon(
                 t['icon'] as IconData,
                 size: 18,
