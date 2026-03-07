@@ -17,4 +17,17 @@ class ScheduleRepository {
       throw Exception(errorMessage);
     }
   }
+
+  Future<WeekScheduleModel> getWeekSchedule() async {
+    try {
+      final response = await _dio.get('/schedules/schedules/current-week/');
+
+      return WeekScheduleModel.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage =
+          e.response?.data['detail'] ??
+          'Error al obtener el horario de la semana';
+      throw Exception(errorMessage);
+    }
+  }
 }

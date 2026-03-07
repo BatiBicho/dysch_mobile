@@ -5,6 +5,8 @@ class ScheduleModel {
   final String periodStatus;
   final String shiftDate;
   final bool isPublished;
+  final String? employeeName;
+  final String? companyName;
 
   ScheduleModel({
     required this.id,
@@ -13,24 +15,38 @@ class ScheduleModel {
     required this.periodStatus,
     required this.shiftDate,
     required this.isPublished,
+    this.employeeName,
+    this.companyName,
   });
 
   factory ScheduleModel.fromJson(Map<String, dynamic> json) {
-    final resultsList = json['results'] as List<dynamic>;
+    return ScheduleModel(
+      id: json['id'] ?? '',
+      shiftDate: json['shift_date'] ?? '',
+      startTime: json['start_time'] ?? '',
+      endTime: json['end_time'] ?? '',
+      periodStatus: json['period_status'] ?? '',
+      isPublished: json['is_published'] ?? false,
+      employeeName: json['employee_name'],
+      companyName: json['company_name'],
+    );
+  }
+}
 
-    if (resultsList.isEmpty) {
-      throw Exception('No hay horarios disponibles');
+class WeekScheduleModel {
+  final List<ScheduleModel> schedules;
+
+  WeekScheduleModel(this.schedules);
+
+  factory WeekScheduleModel.fromJson(List<dynamic> json) {
+    if (json.isEmpty) {
+      throw Exception('No hay horarios disponibles para esta semana');
     }
 
-    final scheduleData = resultsList.first as Map<String, dynamic>;
+    final schedules = json
+        .map((item) => ScheduleModel.fromJson(item as Map<String, dynamic>))
+        .toList();
 
-    return ScheduleModel(
-      id: scheduleData['id'] ?? '',
-      shiftDate: scheduleData['shift_date'] ?? '',
-      startTime: scheduleData['start_time'] ?? '',
-      endTime: scheduleData['end_time'] ?? '',
-      periodStatus: scheduleData['period_status'] ?? '',
-      isPublished: scheduleData['is_published'] ?? false,
-    );
+    return WeekScheduleModel(schedules);
   }
 }
