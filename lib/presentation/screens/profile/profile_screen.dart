@@ -1,10 +1,22 @@
 import 'package:dysch_mobile/core/theme/app_colors.dart';
-import 'package:dysch_mobile/presentation/screens/profile/profile_menu_item.dart';
+import 'package:dysch_mobile/logic/profile/profile_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProfileCubit>().loadProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,99 +35,128 @@ class ProfileScreen extends StatelessWidget {
         ],
         backgroundColor: Colors.transparent,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            // Header: Foto y Nombre
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage(
-                'https://i.pravatar.cc/150?u=carlos',
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Carlos Rodríguez',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const Text(
-              'Ingeniero de Software',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'ID: MX-89201',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
+      body: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          if (state is ProfileLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            const SizedBox(height: 32),
-            _buildSectionTitle('INFORMACIÓN PERSONAL'),
-            _buildCard([
-              ProfileMenuItem(
-                icon: Icons.person_outline,
-                title: 'Datos Personales',
-                subtitle: 'Email, Teléfono, Dirección',
-                iconColor: AppColors.primary,
-                onTap: () {},
+          if (state is ProfileLoaded) {
+            final user = state.user;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(
+                      'https://i.pravatar.cc/150?u=${user.id}',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    user.fullName,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    user.jobPositionTitle,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'ID: ${user.employeeCode}',
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  _buildSectionTitle('INFORMACION PERSONAL'),
+                  _buildCard([
+                    _buildInfoItem('Email', user.email),
+                    _buildInfoItem('Telefono', user.phoneNumber),
+                    _buildInfoItem('Empresa', user.companyName),
+                    _buildInfoItem('Sucursal', user.branchName),
+                    _buildInfoItem('Departamento', user.departmentName),
+                  ]),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('DOCUMENTOS FISCALES'),
+                  _buildCard([
+                    _buildInfoItem('RFC', user.rfc),
+                    _buildInfoItem('CURP', user.curp),
+                    _buildInfoItem('Contrato', user.contractType),
+                  ]),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('DATOS LABORALES'),
+                  _buildCard([
+                    _buildInfoItem(
+                      'Dias de Vacaciones',
+                      '${user.vacationDaysAvailable}',
+                    ),
+                    _buildInfoItem(
+                      'Teletrabajo',
+                      user.isRemoteWorkAllowed ? 'Permitido' : 'No permitido',
+                    ),
+                  ]),
+                  const SizedBox(height: 32),
+                  OutlinedButton.icon(
+                    onPressed: () => context.go('/login'),
+                    icon: const Icon(Icons.logout, color: Colors.red),
+                    label: const Text(
+                      'Cerrar Sesion',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFFEEEEEE)),
+                      minimumSize: const Size(double.infinity, 55),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ProfileMenuItem(
-                icon: Icons.description_outlined,
-                title: 'Documentos Fiscales',
-                subtitle: 'RFC, CURP, Constancia',
-                iconColor: Colors.blue,
-                onTap: () {},
-              ),
-            ]),
+            );
+          }
 
-            const SizedBox(height: 24),
-            _buildSectionTitle('CONFIGURACIÓN'),
-            _buildCard([
-              _buildSwitchItem(
-                Icons.notifications_none,
-                'Notificaciones Push',
-                true,
+          if (state is ProfileError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Error: ${state.message}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<ProfileCubit>().loadProfile(),
+                    child: const Text('Reintentar'),
+                  ),
+                ],
               ),
-              _buildSwitchItem(
-                Icons.face_retouching_natural,
-                'FaceID / TouchID',
-                true,
-              ),
-            ]),
+            );
+          }
 
-            const SizedBox(height: 32),
-            // Botón Cerrar Sesión
-            OutlinedButton.icon(
-              onPressed: () => context.go('/login'),
-              icon: const Icon(Icons.logout, color: Colors.red),
-              label: const Text(
-                'Cerrar Sesión',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Color(0xFFEEEEEE)),
-                minimumSize: const Size(double.infinity, 55),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-            ),
-          ],
-        ),
+          return const Center(child: Text('Sin datos'));
+        },
       ),
     );
   }
@@ -143,13 +184,14 @@ class ProfileScreen extends StatelessWidget {
     child: Column(children: children),
   );
 
-  Widget _buildSwitchItem(IconData icon, String title, bool value) => ListTile(
-    leading: Icon(icon, color: Colors.purple),
-    title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-    trailing: Switch(
-      value: value,
-      onChanged: (v) {},
-      activeThumbColor: AppColors.primary,
+  Widget _buildInfoItem(String label, String value) => ListTile(
+    title: Text(
+      label,
+      style: const TextStyle(fontSize: 12, color: Colors.grey),
+    ),
+    subtitle: Text(
+      value,
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
     ),
   );
 }

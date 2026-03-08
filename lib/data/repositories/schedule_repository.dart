@@ -6,14 +6,24 @@ class ScheduleRepository {
 
   ScheduleRepository(this._dio);
 
-  Future<ScheduleModel> getSchedule() async {
+  Future<ScheduleModel?> getSchedule(String shiftDate) async {
     try {
-      final response = await _dio.get('/schedules/schedules/');
+      final response = await _dio.get(
+        '/schedules/schedules/',
+        queryParameters: {'shift_date': shiftDate},
+      );
 
-      return ScheduleModel.fromJson(response.data);
+      // La respuesta es un objeto paginado con estructura: {count, next, previous, results}
+      final results = response.data['results'] as List?;
+
+      if (results == null || results.isEmpty) {
+        return null; // Sin schedule para este día
+      }
+
+      return ScheduleModel.fromJson(results.first as Map<String, dynamic>);
     } on DioException catch (e) {
       final errorMessage =
-          e.response?.data['detail'] ?? 'Error al iniciar sesión';
+          e.response?.data['detail'] ?? 'Error al obtener el horario';
       throw Exception(errorMessage);
     }
   }

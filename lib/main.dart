@@ -7,6 +7,7 @@ import 'package:dysch_mobile/data/repositories/incident_repository.dart';
 import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:dysch_mobile/logic/incident/incident_cubit.dart';
+import 'package:dysch_mobile/logic/profile/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -51,6 +52,9 @@ void main() async {
           BlocProvider(create: (context) => AuthCubit(userRepository, storage)),
           BlocProvider(create: (context) => ScheduleCubit(scheduleReporsitory)),
           BlocProvider(create: (context) => IncidentCubit(incidentRepository)),
+          BlocProvider(
+            create: (context) => ProfileCubit(userRepository, storage),
+          ),
         ],
         child: const MyApp(),
       ),

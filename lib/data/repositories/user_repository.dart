@@ -13,8 +13,7 @@ class UserRepository {
         data: {'email': email, 'password': password},
       );
 
-      //return response.data;
-      return UserModel.fromJson(response.data);
+      return UserModel.fromLoginJson(response.data);
     } on DioException catch (e) {
       final errorMessage =
           e.response?.data['non_field_errors'] ?? 'Error al iniciar sesión';
@@ -26,11 +25,27 @@ class UserRepository {
     try {
       final response = await _dio.get('/users/$userId/');
 
-      return response.data;
-      //return UserModel.fromJson(response.data);
+      return UserModel.fromLoginJson(response.data);
     } on DioException catch (e) {
       final errorMessage =
-          e.response?.data['non_field_errors'] ?? 'Error al iniciar sesión';
+          e.response?.data['non_field_errors'] ?? 'Error al obtener usuario';
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<UserModel> getEmployeeProfile() async {
+    try {
+      final response = await _dio.get('/organization/employees/');
+
+      final results = response.data['results'] as List;
+      if (results.isEmpty) {
+        throw Exception('No se encontró información del empleado');
+      }
+
+      return UserModel.fromEmployeeJson(results.first as Map<String, dynamic>);
+    } on DioException catch (e) {
+      final errorMessage =
+          e.response?.data['detail'] ?? 'Error al obtener perfil del empleado';
       throw Exception(errorMessage);
     }
   }

@@ -4,8 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class AttendanceCard extends StatelessWidget {
+class AttendanceCard extends StatefulWidget {
   const AttendanceCard({super.key});
+
+  @override
+  State<AttendanceCard> createState() => _AttendanceCardState();
+}
+
+class _AttendanceCardState extends State<AttendanceCard> {
+  @override
+  void initState() {
+    super.initState();
+    // Obtener la fecha actual en formato YYYY-MM-DD
+    final today = DateTime.now();
+    final dateString =
+        "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+
+    // Cargar el schedule para hoy
+    context.read<ScheduleCubit>().getSchedule(dateString);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +33,42 @@ class AttendanceCard extends StatelessWidget {
         }
 
         if (state is ScheduleSuccess) {
-          final schedule = state.schedules; // Asumiendo que es un objeto único
+          final schedule = state.schedules;
+
+          // Si no hay schedule para hoy, mostrar mensaje de descanso
+          if (schedule == null) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.beach_access, size: 64, color: Colors.blue),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '¡Descansa hoy!',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'No tienes turno programado',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                ],
+              ),
+            );
+          }
 
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -151,7 +203,7 @@ Widget _buildErrorState(BuildContext context, String message) {
         TextButton.icon(
           onPressed: () {
             // Volvemos a intentar la carga
-            context.read<ScheduleCubit>().getSchedule();
+            context.read<ScheduleCubit>().getSchedule;
           },
           icon: const Icon(Icons.refresh),
           label: const Text('REINTENTAR'),

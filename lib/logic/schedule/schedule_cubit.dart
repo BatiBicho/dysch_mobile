@@ -10,7 +10,7 @@ class ScheduleInitial extends ScheduleState {}
 class ScheduleLoading extends ScheduleState {}
 
 class ScheduleSuccess extends ScheduleState {
-  final ScheduleModel schedules;
+  final ScheduleModel? schedules; // Ahora puede ser null si no hay schedule
   ScheduleSuccess(this.schedules);
 }
 
@@ -30,12 +30,12 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
   ScheduleCubit(this.repository) : super(ScheduleInitial());
 
-  void getSchedule() async {
+  void getSchedule(String shiftDate) async {
     if (state is ScheduleLoading) return;
 
     try {
       emit(ScheduleLoading());
-      final data = await repository.getSchedule();
+      final data = await repository.getSchedule(shiftDate);
       emit(ScheduleSuccess(data));
     } catch (e) {
       emit(ScheduleError(e.toString().replaceAll("Exception: ", "")));

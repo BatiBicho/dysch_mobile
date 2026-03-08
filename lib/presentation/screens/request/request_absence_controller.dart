@@ -118,8 +118,8 @@ class RequestAbsenceController {
       startDate: startDateStr,
       endDate: endDateStr,
       description: description.trim(),
-      isActive: true,
-      extraFields: extraFields.trim(),
+      // isActive: true,
+      // extraFields: extraFields.trim(),
     );
   }
 

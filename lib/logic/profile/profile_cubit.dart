@@ -26,17 +26,12 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   void loadProfile() async {
     emit(ProfileLoading());
-    // 1. Sacamos el ID de la "caja fuerte" (SharedPreferences)
-    final userId = await storage.getUserId();
-
-    if (userId != null) {
-      try {
-        // 2. Se lo pedimos al repositorio
-        final user = await repository.getUser(userId);
-        emit(ProfileLoaded(user));
-      } catch (e) {
-        emit(ProfileError("Error de conexión"));
-      }
+    try {
+      // El endpoint obtiene el ID del token automáticamente
+      final user = await repository.getEmployeeProfile();
+      emit(ProfileLoaded(user));
+    } catch (e) {
+      emit(ProfileError(e.toString().replaceAll("Exception: ", "")));
     }
   }
 }

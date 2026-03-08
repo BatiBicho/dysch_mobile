@@ -37,7 +37,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await userRepository.loginUser(email, password);
 
-      final String token = user.token;
+      final String? token = user.token;
       final String userId = user.id;
       final String userRole = user.role;
 
@@ -46,10 +46,10 @@ class AuthCubit extends Cubit<AuthState> {
         return;
       }
 
-      await storageService.saveToken(token);
+      await storageService.saveToken(token ?? '');
       await storageService.saveUserId(userId);
 
-      DioClient.setAuthToken(user.token);
+      DioClient.setAuthToken(user.token ?? '');
       emit(AuthSuccess(user));
     } catch (e) {
       emit(AuthError(e.toString().replaceAll("Exception: ", "")));

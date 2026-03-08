@@ -44,8 +44,8 @@ class IncidentCubit extends Cubit<IncidentState> {
     required String startDate,
     required String endDate,
     required String description,
-    required bool isActive,
-    required String extraFields,
+    // required bool isActive,
+    // required String extraFields,
   }) async {
     try {
       emit(IncidentLoading());
@@ -54,8 +54,8 @@ class IncidentCubit extends Cubit<IncidentState> {
         startDate: startDate,
         endDate: endDate,
         description: description,
-        isActive: isActive,
-        extraFields: extraFields,
+        // isActive: isActive,
+        // extraFields: extraFields,
       );
       emit(IncidentSuccess(incident));
     } catch (e) {
@@ -69,8 +69,8 @@ class IncidentCubit extends Cubit<IncidentState> {
 
     try {
       emit(IncidentLoading());
-      final incidents = await repository.getIncidents();
-      emit(IncidentsLoaded(incidents));
+      final data = await repository.getIncidents();
+      emit(IncidentsLoaded(data.incidents));
     } catch (e) {
       emit(IncidentError(e.toString().replaceAll('Exception: ', '')));
     }

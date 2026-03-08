@@ -13,8 +13,6 @@ class IncidentRepository {
     required String startDate,
     required String endDate,
     required String description,
-    required bool isActive,
-    required String extraFields,
   }) async {
     try {
       final response = await _dio.post(
@@ -24,19 +22,10 @@ class IncidentRepository {
           'start_date': startDate,
           'end_date': endDate,
           'description': description,
-          'is_active': isActive,
-          'extra_fields': extraFields,
         },
       );
 
-      // El servidor responde con { "message": "...", "incident": { ... } }
-      // Extraer el objeto incident del response
-      if (response.data is Map && response.data['incident'] != null) {
-        return IncidentModel.fromJson(response.data['incident']);
-      } else {
-        // Fallback si la estructura es diferente
-        return IncidentModel.fromJson(response.data);
-      }
+      return IncidentModel.fromJson(response.data['incident']);
     } on DioException catch (e) {
       final errorMessage =
           e.response?.data['detail'] ?? 'Error al crear el incidente';
@@ -45,21 +34,11 @@ class IncidentRepository {
   }
 
   // GET: Obtener todos los incidentes
-  Future<List<IncidentModel>> getIncidents() async {
+  Future<IncidentsListModel> getIncidents() async {
     try {
       final response = await _dio.get('/incidents/incidents/');
 
-      if (response.data is List) {
-        return (response.data as List)
-            .map((incident) => IncidentModel.fromJson(incident))
-            .toList();
-      } else if (response.data is Map && response.data['results'] != null) {
-        return (response.data['results'] as List)
-            .map((incident) => IncidentModel.fromJson(incident))
-            .toList();
-      }
-
-      return [];
+      return IncidentsListModel.fromJson(response.data);
     } on DioException catch (e) {
       final errorMessage =
           e.response?.data['detail'] ?? 'Error al obtener incidentes';
@@ -97,7 +76,6 @@ class IncidentRepository {
           'is_sensitive_data': isSensitiveData,
         },
       );
-
       return EvidenceModel.fromJson(response.data);
     } on DioException catch (e) {
       final errorMessage =

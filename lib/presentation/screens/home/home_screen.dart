@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
           slivers: [
             // 1. Header: Perfil y Notificaciones
             SliverToBoxAdapter(
-              child: HomeHeader(name: user?.name ?? 'Usuario'),
+              child: HomeHeader(name: user?.firstName ?? 'Usuario'),
             ),
 
             // 2. Tarjeta de Registro de Entrada (Reloj)
@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
               child: BlocProvider<ScheduleCubit>(
                 create: (context) => ScheduleCubit(
                   RepositoryProvider.of<ScheduleRepository>(context),
-                )..getSchedule(), // 👈 IMPORTANTE: Llama al método inmediatamente
+                )..getSchedule, // 👈 IMPORTANTE: Llama al método inmediatamente
                 child: const AttendanceCard(),
               ),
             ),
