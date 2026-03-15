@@ -19,6 +19,8 @@ class WeekScheduleSuccess extends ScheduleState {
   WeekScheduleSuccess(this.schedules);
 }
 
+class WeekScheduleEmpty extends ScheduleState {}
+
 class ScheduleError extends ScheduleState {
   final String message;
   ScheduleError(this.message);
@@ -48,7 +50,11 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     try {
       emit(ScheduleLoading());
       final data = await repository.getWeekSchedule();
-      emit(WeekScheduleSuccess(data));
+      if (data.schedules.isEmpty) {
+        emit(WeekScheduleEmpty());
+      } else {
+        emit(WeekScheduleSuccess(data));
+      }
     } catch (e) {
       emit(ScheduleError(e.toString().replaceAll("Exception: ", "")));
     }

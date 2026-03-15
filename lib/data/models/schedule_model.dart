@@ -39,10 +39,6 @@ class WeekScheduleModel {
   WeekScheduleModel(this.schedules);
 
   factory WeekScheduleModel.fromJson(List<dynamic> json) {
-    if (json.isEmpty) {
-      throw Exception('No hay horarios disponibles para esta semana');
-    }
-
     final schedules = json
         .map((item) => ScheduleModel.fromJson(item as Map<String, dynamic>))
         .toList();
