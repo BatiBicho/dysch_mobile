@@ -1,4 +1,7 @@
 import 'package:dysch_mobile/presentation/screens/auth/login_screen.dart';
+import 'package:dysch_mobile/presentation/screens/feedback/feedback_screen.dart';
+import 'package:dysch_mobile/presentation/screens/feedback/feedback_results_screen.dart';
+import 'package:dysch_mobile/presentation/screens/feedback/take_feedback_screen.dart';
 import 'package:dysch_mobile/presentation/screens/home/home_screen.dart';
 import 'package:dysch_mobile/presentation/screens/incedent_history/incedent_history_screen.dart';
 import 'package:dysch_mobile/presentation/screens/notifications/notification_screen.dart';
@@ -12,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/main/main_screen.dart';
 
-// Claves para la navegación
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -43,6 +45,11 @@ class AppRouter {
             path: '/nomina',
             builder: (context, state) => const PayrollScreen(),
           ),
+
+          GoRoute(
+            path: '/feedback',
+            builder: (context, state) => const FeedbackScreen(),
+          ),
         ],
       ),
       // Rutas sin Bottom Navigation Bar
@@ -70,6 +77,34 @@ class AppRouter {
         path: '/vacations',
         builder: (context, state) => const VacationsScreen(),
       ),
+
+      GoRoute(
+        path: '/take-feedback',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return TakeFeedbackScreen(
+            campaignId: extra['campaignId'] as String,
+            campaignName: extra['campaignName'] as String,
+            topicId: extra['topicId'] as String,
+            topicTitle: extra['topicTitle'] as String,
+            resultsVisibleToEmployees:
+                extra['resultsVisibleToEmployees'] as bool? ?? false,
+            isAnonymous: extra['isAnonymous'] as bool? ?? false,
+            employeeCode: extra['employeeCode'] as String? ?? '',
+          );
+        },
+      ),
+      GoRoute(
+        path: '/feedback-results',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return FeedbackResultsScreen(
+            campaignId: extra['campaignId'] as String,
+            employeeCode: extra['employeeCode'] as String? ?? '',
+          );
+        },
+      ),
+
     ],
   );
 }

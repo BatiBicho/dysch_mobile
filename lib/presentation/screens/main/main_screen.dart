@@ -33,6 +33,11 @@ class MainScreen extends StatelessWidget {
             label: 'Nómina',
           ),
           NavigationDestination(
+            icon: Icon(Icons.assignment_outlined),
+            selectedIcon: Icon(Icons.assignment),
+            label: 'Evaluaciones',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Perfil',
@@ -47,7 +52,8 @@ class MainScreen extends StatelessWidget {
     if (location == '/home') return 0;
     if (location == '/horarios') return 1;
     if (location == '/nomina') return 2;
-    if (location == '/profile') return 3;
+    if (location == '/feedback') return 3;
+    if (location == '/profile') return 4;
     return 0;
   }
 
@@ -63,6 +69,9 @@ class MainScreen extends StatelessWidget {
         context.go('/nomina');
         break;
       case 3:
+        context.go('/feedback');
+        break;
+      case 4:
         context.push('/profile');
         break;
     }

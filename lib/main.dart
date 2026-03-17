@@ -1,21 +1,28 @@
 import 'package:dysch_mobile/core/api/dio_client.dart';
 import 'package:dysch_mobile/core/router/app_router.dart';
 import 'package:dysch_mobile/core/services/storage_service.dart';
+import 'package:dysch_mobile/data/repositories/feedback_repository.dart';
 import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
 import 'package:dysch_mobile/data/repositories/user_repository.dart';
 import 'package:dysch_mobile/data/repositories/incident_repository.dart';
 import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
+import 'package:dysch_mobile/logic/feedback/feedback_cubit.dart';
 import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:dysch_mobile/logic/incident/incident_cubit.dart';
 import 'package:dysch_mobile/logic/profile/profile_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:logger/logger.dart';
 import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Formateo de fechas en español
+  await initializeDateFormatting('es', null);
+
   final logger = Logger(
     printer: PrettyPrinter(
       methodCount: 0,
@@ -35,9 +42,11 @@ void main() async {
 
   final dio = DioClient.instance;
   final storage = StorageService();
+
   final userRepository = UserRepository(dio);
   final scheduleReporsitory = ScheduleRepository(dio);
   final incidentRepository = IncidentRepository(dio);
+  final feedbackRepository = FeedbackRepository(dio);
 
   runApp(
     MultiRepositoryProvider(
@@ -45,6 +54,7 @@ void main() async {
         RepositoryProvider.value(value: userRepository),
         RepositoryProvider.value(value: scheduleReporsitory),
         RepositoryProvider.value(value: incidentRepository),
+        RepositoryProvider.value(value: feedbackRepository),
         RepositoryProvider.value(value: storage),
       ],
       child: MultiBlocProvider(
@@ -54,6 +64,10 @@ void main() async {
           BlocProvider(create: (context) => IncidentCubit(incidentRepository)),
           BlocProvider(
             create: (context) => ProfileCubit(userRepository, storage),
+          ),
+          BlocProvider(
+            create: (context) =>
+                FeedbackCubit(feedbackRepository)..loadPendingAssignments(),
           ),
         ],
         child: const MyApp(),
