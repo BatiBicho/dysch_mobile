@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1017940272143",
+    "project_id": "dysch-fcm",
+    "storage_bucket": "dysch-fcm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017940272143:android:69cc74bef8eb4c3b722f7a",
+        "android_client_info": {
+          "package_name": "com.example.dysch_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFv1xqwyO3zPP55zyxT7Ler1mw5Iiv1ts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

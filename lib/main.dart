@@ -1,7 +1,9 @@
 import 'package:dysch_mobile/core/api/dio_client.dart';
 import 'package:dysch_mobile/core/router/app_router.dart';
+import 'package:dysch_mobile/core/services/notification_service.dart';
 import 'package:dysch_mobile/core/services/storage_service.dart';
 import 'package:dysch_mobile/data/repositories/feedback_repository.dart';
+import 'package:dysch_mobile/data/repositories/notification_repository.dart';
 import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
 import 'package:dysch_mobile/data/repositories/user_repository.dart';
 import 'package:dysch_mobile/data/repositories/incident_repository.dart';
@@ -10,15 +12,21 @@ import 'package:dysch_mobile/logic/feedback/feedback_cubit.dart';
 import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:dysch_mobile/logic/incident/incident_cubit.dart';
 import 'package:dysch_mobile/logic/profile/profile_cubit.dart';
+import 'package:dysch_mobile/logic/notification/notification_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logger/logger.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Formateo de fechas en español
   await initializeDateFormatting('es', null);
@@ -47,6 +55,10 @@ void main() async {
   final scheduleReporsitory = ScheduleRepository(dio);
   final incidentRepository = IncidentRepository(dio);
   final feedbackRepository = FeedbackRepository(dio);
+  final notificationRepository = NotificationRepository(dio);
+  final notificationService = NotificationService(notificationRepository);
+
+  await notificationService.setup();
 
   runApp(
     MultiRepositoryProvider(
@@ -56,10 +68,15 @@ void main() async {
         RepositoryProvider.value(value: incidentRepository),
         RepositoryProvider.value(value: feedbackRepository),
         RepositoryProvider.value(value: storage),
+        RepositoryProvider.value(value: notificationRepository),
+        RepositoryProvider.value(value: notificationService),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => AuthCubit(userRepository, storage)),
+          BlocProvider(
+            create: (context) =>
+                AuthCubit(userRepository, storage, notificationService),
+          ),
           BlocProvider(create: (context) => ScheduleCubit(scheduleReporsitory)),
           BlocProvider(create: (context) => IncidentCubit(incidentRepository)),
           BlocProvider(
@@ -68,6 +85,9 @@ void main() async {
           BlocProvider(
             create: (context) =>
                 FeedbackCubit(feedbackRepository)..loadPendingAssignments(),
+          ),
+          BlocProvider(
+            create: (context) => NotificationCubit(notificationRepository),
           ),
         ],
         child: const MyApp(),

@@ -1,4 +1,5 @@
 import 'package:dysch_mobile/core/api/dio_client.dart';
+import 'package:dysch_mobile/core/services/notification_service.dart';
 import 'package:dysch_mobile/core/services/storage_service.dart';
 import 'package:dysch_mobile/data/models/user_model.dart';
 import 'package:dysch_mobile/data/repositories/user_repository.dart';
@@ -23,8 +24,10 @@ class AuthError extends AuthState {
 class AuthCubit extends Cubit<AuthState> {
   final UserRepository userRepository;
   final StorageService storageService;
+  final NotificationService _notificationService;
 
-  AuthCubit(this.userRepository, this.storageService) : super(AuthInitial());
+  AuthCubit(this.userRepository, this.storageService, this._notificationService)
+    : super(AuthInitial());
 
   void login(String email, String password) async {
     if (email.trim().isEmpty || password.trim().isEmpty) {
@@ -51,6 +54,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       DioClient.setAuthToken(user.token ?? '');
       emit(AuthSuccess(user));
+      await _notificationService.registerTokenAfterLogin();
     } catch (e) {
       emit(AuthError(e.toString().replaceAll("Exception: ", "")));
     }

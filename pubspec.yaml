@@ -36,7 +36,13 @@ dependencies:
   mobile_scanner: ^5.0.0  # Versión más estable
 
   # Para notificaciones locales (Horarios)
+  firebase_core: ^3.0.0
+  firebase_messaging: ^15.0.0
+  flutter_local_notifications: ^17.0.0
   #flutter_local_notifications: ^17.0.0  # Comentada temporalmente
+
+  # Informacion acerca del dispositivo
+  device_info_plus: ^12.3.0
 
   # Para notificaciones remotas vía REST API
   onesignal_flutter: ^5.0.0
