@@ -13,40 +13,53 @@ import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:dysch_mobile/logic/incident/incident_cubit.dart';
 import 'package:dysch_mobile/logic/profile/profile_cubit.dart';
 import 'package:dysch_mobile/logic/notification/notification_cubit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logger/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Formateo de fechas en español
-  await initializeDateFormatting('es', null);
-
-  final logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 0,
-      errorMethodCount: 5,
-      lineLength: 50,
-      colors: true,
-      printEmojis: true,
-    ),
-  );
-
+  // ← Solo una vez, al inicio
+  final logger = Logger(printer: PrettyPrinter(methodCount: 0));
   try {
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: '.env');
     logger.i("✅ Variables de entorno cargadas");
   } catch (e) {
     logger.e("❌ Error cargando .env: $e");
   }
+
+  // Inicializar Firebase con variables de entorno
+  final isAndroid = defaultTargetPlatform == TargetPlatform.android;
+  final apiKey = dotenv.get(
+    isAndroid ? 'API_KEY_ANDROID' : 'API_KEY_IOS',
+    fallback: '',
+  );
+  final appId = dotenv.get(
+    isAndroid ? 'APP_ID_ANDROID' : 'APP_ID_IOS',
+    fallback: '',
+  );
+  final messagingSenderId = dotenv.get('MSG_SENDER_ID', fallback: '');
+  final projectId = dotenv.get('PROJECT_ID', fallback: '');
+  final storageBucket = dotenv.get('STORAGE_BUCKET', fallback: '');
+
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: apiKey,
+      appId: appId,
+      messagingSenderId: messagingSenderId,
+      projectId: projectId,
+      storageBucket: storageBucket.isNotEmpty ? storageBucket : null,
+    ),
+  );
+
+  // Formateo de fechas en español
+  await initializeDateFormatting('es', null);
 
   final dio = DioClient.instance;
   final storage = StorageService();
