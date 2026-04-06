@@ -3,6 +3,7 @@ import 'package:dysch_mobile/core/router/app_router.dart';
 import 'package:dysch_mobile/core/services/notification_service.dart';
 import 'package:dysch_mobile/core/services/storage_service.dart';
 import 'package:dysch_mobile/data/repositories/feedback_repository.dart';
+import 'package:dysch_mobile/data/repositories/attendance_repository.dart';
 import 'package:dysch_mobile/data/repositories/notification_repository.dart';
 import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
 import 'package:dysch_mobile/data/repositories/user_repository.dart';
@@ -12,6 +13,7 @@ import 'package:dysch_mobile/logic/feedback/feedback_cubit.dart';
 import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:dysch_mobile/logic/incident/incident_cubit.dart';
 import 'package:dysch_mobile/logic/profile/profile_cubit.dart';
+import 'package:dysch_mobile/logic/attendance/attendance_cubit.dart';
 import 'package:dysch_mobile/logic/notification/notification_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +71,7 @@ void main() async {
   final incidentRepository = IncidentRepository(dio);
   final feedbackRepository = FeedbackRepository(dio);
   final notificationRepository = NotificationRepository(dio);
+  final attendanceRepository = AttendanceRepository(dio);
   final notificationService = NotificationService(notificationRepository);
 
   await notificationService.setup();
@@ -82,6 +85,7 @@ void main() async {
         RepositoryProvider.value(value: feedbackRepository),
         RepositoryProvider.value(value: storage),
         RepositoryProvider.value(value: notificationRepository),
+        RepositoryProvider.value(value: attendanceRepository),
         RepositoryProvider.value(value: notificationService),
       ],
       child: MultiBlocProvider(
@@ -94,6 +98,9 @@ void main() async {
           BlocProvider(create: (context) => IncidentCubit(incidentRepository)),
           BlocProvider(
             create: (context) => ProfileCubit(userRepository, storage),
+          ),
+          BlocProvider(
+            create: (context) => AttendanceCubit(attendanceRepository),
           ),
           BlocProvider(
             create: (context) =>
