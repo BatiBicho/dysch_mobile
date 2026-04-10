@@ -37,7 +37,7 @@ class UserRepository {
     try {
       final response = await _dio.get('/organization/employees/');
 
-      final results = response.data['results'] as List;
+      final results = response.data as List;
       if (results.isEmpty) {
         throw Exception('No se encontró información del empleado');
       }

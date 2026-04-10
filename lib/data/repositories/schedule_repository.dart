@@ -14,7 +14,7 @@ class ScheduleRepository {
       );
 
       // La respuesta es un objeto paginado con estructura: {count, next, previous, results}
-      final results = response.data['results'] as List?;
+      final results = response.data as List?;
 
       if (results == null || results.isEmpty) {
         return null; // Sin schedule para este día
