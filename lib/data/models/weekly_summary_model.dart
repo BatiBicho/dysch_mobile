@@ -3,12 +3,14 @@ class WeeklySummaryModel {
   final Scheduled scheduled;
   final Completed completed;
   final Summary summary;
+  final HoursBreakdown? hoursBreakdown;
 
   WeeklySummaryModel({
     required this.week,
     required this.scheduled,
     required this.completed,
     required this.summary,
+    this.hoursBreakdown,
   });
 
   factory WeeklySummaryModel.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,11 @@ class WeeklySummaryModel {
       scheduled: Scheduled.fromJson(json['scheduled'] as Map<String, dynamic>),
       completed: Completed.fromJson(json['completed'] as Map<String, dynamic>),
       summary: Summary.fromJson(json['summary'] as Map<String, dynamic>),
+      hoursBreakdown: json['hours_breakdown'] != null
+          ? HoursBreakdown.fromJson(
+              json['hours_breakdown'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 
@@ -25,6 +32,7 @@ class WeeklySummaryModel {
     'scheduled': scheduled.toJson(),
     'completed': completed.toJson(),
     'summary': summary.toJson(),
+    if (hoursBreakdown != null) 'hours_breakdown': hoursBreakdown!.toJson(),
   };
 }
 
@@ -112,6 +120,36 @@ class Hours {
     'hours': hours,
     'minutes': minutes,
     'formatted': formatted,
+  };
+}
+
+class HoursBreakdown {
+  final Hours ordinary;
+  final Hours extras;
+  final Hours sobreExtras;
+  final Hours total;
+
+  HoursBreakdown({
+    required this.ordinary,
+    required this.extras,
+    required this.sobreExtras,
+    required this.total,
+  });
+
+  factory HoursBreakdown.fromJson(Map<String, dynamic> json) {
+    return HoursBreakdown(
+      ordinary: Hours.fromJson(json['ordinary'] as Map<String, dynamic>),
+      extras: Hours.fromJson(json['extras'] as Map<String, dynamic>),
+      sobreExtras: Hours.fromJson(json['sobre_extras'] as Map<String, dynamic>),
+      total: Hours.fromJson(json['total'] as Map<String, dynamic>),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'ordinary': ordinary.toJson(),
+    'extras': extras.toJson(),
+    'sobre_extras': sobreExtras.toJson(),
+    'total': total.toJson(),
   };
 }
 

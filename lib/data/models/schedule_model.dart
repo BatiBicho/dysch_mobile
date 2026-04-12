@@ -5,6 +5,7 @@ class ScheduleModel {
   final String periodStatus;
   final String shiftDate;
   final bool isPublished;
+  final bool isCompleted;
   final String? employeeName;
   final String? companyName;
 
@@ -15,6 +16,7 @@ class ScheduleModel {
     required this.periodStatus,
     required this.shiftDate,
     required this.isPublished,
+    this.isCompleted = false,
     this.employeeName,
     this.companyName,
   });
@@ -27,6 +29,7 @@ class ScheduleModel {
       endTime: json['end_time'] ?? '',
       periodStatus: json['period_status'] ?? '',
       isPublished: json['is_published'] ?? false,
+      isCompleted: json['is_completed'] ?? false,
       employeeName: json['employee_name'],
       companyName: json['company_name'],
     );

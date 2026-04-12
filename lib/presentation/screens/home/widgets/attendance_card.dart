@@ -87,8 +87,8 @@ class _AttendanceCardState extends State<AttendanceCard> {
             child: Column(
               children: [
                 // Badge de ubicación dinámico
-                _buildLocationBadge('UBICACIÓN NO DETECTADA'),
-                const SizedBox(height: 16),
+                // _buildLocationBadge('UBICACIÓN NO DETECTADA'),
+                // const SizedBox(height: 16),
 
                 // Reloj o Tiempo Transcurrido
                 const StreamClock(), // Un pequeño widget que se actualiza cada segundo
@@ -146,28 +146,68 @@ class _AttendanceCardState extends State<AttendanceCard> {
   }
 
   Widget _buildActionButton(BuildContext context, dynamic schedule) {
-    // Aquí podrías cambiar el color/texto si el usuario ya hizo Check-in
-    bool alreadyCheckedIn = false;
+    // Verificar si el turno ya está completado
+    final isCompleted = schedule.isCompleted ?? false;
+
+    // Si el turno está completado, mostrar un mensaje en lugar del botón
+    if (isCompleted) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green, size: 32),
+                  SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Turno Completado',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.green,
+                        ),
+                      ),
+                      Text(
+                        'Tu turno de hoy ya ha sido registrado',
+                        style: TextStyle(fontSize: 12, color: Colors.green),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return ElevatedButton(
       onPressed: () => context.push('/qr'),
       style: ElevatedButton.styleFrom(
-        backgroundColor: alreadyCheckedIn
-            ? Colors.redAccent
-            : AppColors.primary,
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         minimumSize: const Size(double.infinity, 64),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
       ),
-      child: Row(
+      child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(alreadyCheckedIn ? Icons.logout : Icons.fingerprint),
-          const SizedBox(width: 12),
+          Icon(Icons.fingerprint),
+          SizedBox(width: 12),
           Text(
-            alreadyCheckedIn ? 'REGISTRAR SALIDA' : 'REGISTRAR ENTRADA',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            'REGISTRAR ENTRADA',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ],
       ),
