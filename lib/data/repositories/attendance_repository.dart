@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dysch_mobile/core/api/dio_client.dart';
 import 'package:dysch_mobile/data/models/attendance_model.dart';
+import 'package:dysch_mobile/data/models/weekly_summary_model.dart';
 
 class AttendanceException implements Exception {
   final String message;
@@ -28,7 +29,7 @@ class AttendanceRepository {
           'longitude': longitude,
           'method': 'QR',
           'qr_code': qrCode,
-          'client_timestamp': clientTimestamp.toUtc().toIso8601String(),
+          //'client_timestamp': clientTimestamp.toUtc().toIso8601String(),
         },
       );
       return AttendanceResponseModel.fromJson(
@@ -53,7 +54,7 @@ class AttendanceRepository {
           'longitude': longitude,
           'method': 'QR',
           'qr_code': qrCode,
-          'client_timestamp': clientTimestamp.toUtc().toIso8601String(),
+          //'client_timestamp': clientTimestamp.toUtc().toIso8601String(),
         },
       );
       return AttendanceResponseModel.fromJson(
@@ -97,5 +98,14 @@ class AttendanceRepository {
       return map;
     }
     return {};
+  }
+
+  Future<WeeklySummaryModel> getWeeklySummary() async {
+    try {
+      final response = await _dio.get('/attendance/records/weekly-summary/');
+      return WeeklySummaryModel.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw AttendanceException(_extractMessage(e), _parseErrors(e));
+    }
   }
 }

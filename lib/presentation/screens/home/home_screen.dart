@@ -1,7 +1,9 @@
 import 'package:dysch_mobile/core/theme/app_colors.dart';
+import 'package:dysch_mobile/data/repositories/attendance_repository.dart';
 import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
 import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
+import 'package:dysch_mobile/logic/schedule/weekly_summary_cubit.dart';
 import 'package:dysch_mobile/presentation/screens/home/widgets/home_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,29 +45,92 @@ class HomeScreen extends StatelessWidget {
             const SliverToBoxAdapter(
               child: SectionTitle(title: 'Resumen Semanal'),
             ),
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: SummaryCard(
-                        icon: Icons.access_time_filled,
-                        label: '38.5h',
-                        subLabel: 'Trabajadas',
-                        color: AppColors.info,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: SummaryCard(
-                        icon: Icons.calendar_month,
-                        label: '4/5',
-                        subLabel: 'Asistidos',
-                        color: Colors.purple,
-                      ),
-                    ),
-                  ],
+            SliverToBoxAdapter(
+              child: BlocProvider<WeeklySummaryCubit>(
+                create: (context) => WeeklySummaryCubit(
+                  RepositoryProvider.of<AttendanceRepository>(context),
+                )..getWeeklySummary(),
+                child: BlocBuilder<WeeklySummaryCubit, WeeklySummaryState>(
+                  builder: (context, state) {
+                    if (state is WeeklySummarySuccess) {
+                      final summary = state.summary;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SummaryCard(
+                                icon: Icons.access_time_filled,
+                                label: summary.completed.hours.formatted,
+                                subLabel: 'Trabajadas',
+                                color: AppColors.info,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: SummaryCard(
+                                icon: Icons.calendar_month,
+                                label: summary.summary.daysProgress,
+                                subLabel: 'Asistidos',
+                                color: Colors.purple,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (state is WeeklySummaryLoading) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 100,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: SizedBox(
+                                height: 100,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      // Error o estado inicial - mostrar valores por defecto
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SummaryCard(
+                                icon: Icons.access_time_filled,
+                                label: '0h 0m',
+                                subLabel: 'Trabajadas',
+                                color: AppColors.info,
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: SummaryCard(
+                                icon: Icons.calendar_month,
+                                label: '0/0',
+                                subLabel: 'Asistidos',
+                                color: Colors.purple,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
                 ),
               ),
             ),
