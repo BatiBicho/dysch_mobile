@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   //  Colores principales
-  static const primary = Color(0xFFFF6B35);
+  static const primary = Color(0xFFF56B39);
   static const primaryContainer = Color(0xFFFFF0EB);
   static const secondary = Color(0xFF202124);
 
@@ -20,7 +20,7 @@ class AppColors {
   static const infoContainer = Color(0xFFE8F0FE);
 
   // Colores de fondo y superficie
-  static const background = Color(0xFFF8F9FA);
+  static const background = Color(0xFFF6F7FB);
   static const surface = Colors.white;
   static const outline = Color(0xFFE0E0E0);
 
