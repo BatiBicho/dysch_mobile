@@ -21,18 +21,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
         title: const Text(
           'Mi Perfil',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {},
-            child: const Text('Editar', style: TextStyle(color: Colors.orange)),
-          ),
-        ],
+        // actions: [
+        //   TextButton(
+        //     onPressed: () {},
+        //     child: const Text('Editar', style: TextStyle(color: Colors.orange)),
+        //   ),
+        // ],
         backgroundColor: Colors.transparent,
       ),
       body: BlocBuilder<ProfileCubit, ProfileState>(

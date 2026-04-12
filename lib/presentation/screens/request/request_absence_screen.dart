@@ -45,7 +45,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
     return BlocListener<IncidentCubit, IncidentState>(
       listener: _handleIncidentStateChange,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: const Color(0xFFF6F7FB),
         appBar: AppBar(title: const Text('Solicitar Ausencia')),
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),

@@ -2,124 +2,107 @@ import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:dysch_mobile/data/models/schedule_model.dart';
 import 'package:flutter/material.dart';
 
-class WeeklyCalendarStrip extends StatefulWidget {
+class WeeklyCalendarStrip extends StatelessWidget {
   final List<ScheduleModel> schedules;
+  final bool isCurrentWeek;
 
-  const WeeklyCalendarStrip({super.key, required this.schedules});
-
-  @override
-  State<WeeklyCalendarStrip> createState() => _WeeklyCalendarStripState();
-}
-
-class _WeeklyCalendarStripState extends State<WeeklyCalendarStrip> {
-  late DateTime today;
-
-  @override
-  void initState() {
-    super.initState();
-    today = DateTime.now();
-  }
+  const WeeklyCalendarStrip({
+    super.key,
+    required this.schedules,
+    this.isCurrentWeek = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final daysOfWeek = _generateWeekDays();
-    final scheduleDates = widget.schedules
-        .map((s) => DateTime.parse(s.shiftDate))
-        .toSet();
+    final today = DateTime.now();
+    final referenceDay = isCurrentWeek ? today : today.add(const Duration(days: 7));
+    final weekDays = _generateWeekDays(referenceDay);
+    final scheduleDates = schedules.map((s) => _dateOnly(DateTime.parse(s.shiftDate))).toSet();
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: daysOfWeek.map((day) {
-            final isToday =
-                day.year == today.year &&
-                day.month == today.month &&
-                day.day == today.day;
-            final hasSchedule = scheduleDates.contains(day);
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: _buildDayItem(
-                _getDayName(day.weekday),
-                day.day.toString().padLeft(2, '0'),
-                isToday,
-                hasSchedule,
-              ),
-            );
-          }).toList(),
-        ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: weekDays.map((day) {
+          final isToday = isCurrentWeek && _isSameDay(day, today);
+          final hasSchedule = scheduleDates.contains(_dateOnly(day));
+          return _buildDayCell(day, isToday: isToday, hasSchedule: hasSchedule);
+        }).toList(),
       ),
     );
   }
 
-  List<DateTime> _generateWeekDays() {
-    final currentDay = today;
-    final startOfWeek = currentDay.subtract(
-      Duration(days: currentDay.weekday - 1),
-    );
-    return List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+  List<DateTime> _generateWeekDays(DateTime reference) {
+    final monday = reference.subtract(Duration(days: reference.weekday - 1));
+    return List.generate(7, (i) => monday.add(Duration(days: i)));
   }
 
-  String _getDayName(int weekday) {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days[weekday - 1];
-  }
+  Widget _buildDayCell(DateTime day, {required bool isToday, required bool hasSchedule}) {
+    final dayLabel = _getDayLabel(day.weekday);
 
-  Widget _buildDayItem(
-    String day,
-    String number,
-    bool isToday,
-    bool hasSchedule,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: isToday ? AppColors.primary : AppColors.background,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: isToday
-            ? [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : [],
-        border: hasSchedule && !isToday
-            ? Border.all(color: AppColors.primary, width: 2)
-            : null,
-      ),
+    return SizedBox(
+      width: 40,
       child: Column(
         children: [
           Text(
-            day,
+            dayLabel,
             style: TextStyle(
-              color: isToday ? Colors.white70 : Colors.grey,
-              fontSize: 12,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: isToday ? AppColors.primary : const Color(0xFFBBBBBB),
             ),
           ),
-          Text(
-            number,
-            style: TextStyle(
-              color: isToday ? Colors.white : Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: 6),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: isToday ? AppColors.primary : Colors.transparent,
+              shape: BoxShape.circle,
+              border: hasSchedule && !isToday
+                  ? Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 1.5)
+                  : null,
             ),
-          ),
-          if (isToday)
-            Container(
-              margin: const EdgeInsets.only(top: 4),
-              width: 4,
-              height: 4,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
+            child: Center(
+              child: Text(
+                '${day.day}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: isToday
+                      ? Colors.white
+                      : hasSchedule
+                          ? AppColors.primary
+                          : const Color(0xFF9E9E9E),
+                ),
               ),
             ),
+          ),
+          const SizedBox(height: 6),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: hasSchedule
+                  ? (isToday ? Colors.white : AppColors.primary)
+                  : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+          ),
         ],
       ),
     );
   }
+
+  String _getDayLabel(int weekday) {
+    const labels = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    return labels[weekday - 1];
+  }
+
+  DateTime _dateOnly(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 }

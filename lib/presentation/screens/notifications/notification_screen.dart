@@ -61,7 +61,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     // Si no está autenticado, mostrar mensaje
     if (!isAuthenticated) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: const Color(0xFFF6F7FB),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -93,7 +93,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: const Color(0xFFF6F7FB),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,

@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F3F6), // Fondo grisáceo suave
+      backgroundColor: const Color(0xFFF6F7FB),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
