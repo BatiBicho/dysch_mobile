@@ -8,6 +8,7 @@ import 'package:dysch_mobile/data/repositories/notification_repository.dart';
 import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
 import 'package:dysch_mobile/data/repositories/user_repository.dart';
 import 'package:dysch_mobile/data/repositories/incident_repository.dart';
+import 'package:dysch_mobile/data/repositories/shift_swap_repository.dart';
 import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 import 'package:dysch_mobile/logic/feedback/feedback_cubit.dart';
 import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
@@ -15,6 +16,7 @@ import 'package:dysch_mobile/logic/incident/incident_cubit.dart';
 import 'package:dysch_mobile/logic/profile/profile_cubit.dart';
 import 'package:dysch_mobile/logic/attendance/attendance_cubit.dart';
 import 'package:dysch_mobile/logic/notification/notification_cubit.dart';
+import 'package:dysch_mobile/logic/shift_swap/shift_swap_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,6 +74,7 @@ void main() async {
   final feedbackRepository = FeedbackRepository(dio);
   final notificationRepository = NotificationRepository(dio);
   final attendanceRepository = AttendanceRepository(dio);
+  final shiftSwapRepository = ShiftSwapRepository(dio);
   final notificationService = NotificationService(notificationRepository);
 
   await notificationService.setup();
@@ -86,6 +89,7 @@ void main() async {
         RepositoryProvider.value(value: storage),
         RepositoryProvider.value(value: notificationRepository),
         RepositoryProvider.value(value: attendanceRepository),
+        RepositoryProvider.value(value: shiftSwapRepository),
         RepositoryProvider.value(value: notificationService),
       ],
       child: MultiBlocProvider(
@@ -108,6 +112,9 @@ void main() async {
           ),
           BlocProvider(
             create: (context) => NotificationCubit(notificationRepository),
+          ),
+          BlocProvider(
+            create: (context) => ShiftSwapCubit(shiftSwapRepository),
           ),
         ],
         child: const MyApp(),

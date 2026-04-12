@@ -11,6 +11,7 @@ import 'package:dysch_mobile/presentation/screens/qr_scanner/qr_scanner_screen.d
 import 'package:dysch_mobile/presentation/screens/request/request_absence_screen.dart';
 import 'package:dysch_mobile/presentation/screens/schedule/schedule_screen.dart';
 import 'package:dysch_mobile/presentation/screens/vacations/vacations_screen.dart';
+import 'package:dysch_mobile/presentation/screens/shift_swap/shift_swap_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/main/main_screen.dart';
@@ -76,6 +77,10 @@ class AppRouter {
       GoRoute(
         path: '/vacations',
         builder: (context, state) => const VacationsScreen(),
+      ),
+      GoRoute(
+        path: '/shift-swap',
+        builder: (context, state) => const ShiftSwapScreen(),
       ),
 
       GoRoute(
