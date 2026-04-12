@@ -254,8 +254,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                           const SizedBox(height: 8),
                           Text(
                             _currentAction == AttendanceAction.checkIn
-                                ? 'Se enviará un check-in al backend'
-                                : 'Se enviará un check-out al backend',
+                                ? 'Se enviará un check-in'
+                                : 'Se enviará un check-out',
                             textAlign: TextAlign.center,
                             style: const TextStyle(color: Colors.white70),
                           ),

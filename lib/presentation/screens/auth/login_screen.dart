@@ -4,14 +4,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+  bool _isPasswordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -38,8 +58,8 @@ class LoginScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(28),
                 child: Stack(
                   children: [
-                    Image.network(
-                      'https://img.freepik.com/free-vector/office-workers-concept-illustration_114360-1248.jpg',
+                    const Image(
+                      image: AssetImage('assets/images/logo3.png'),
                       height: 200,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -107,32 +127,41 @@ class LoginScreen extends StatelessWidget {
               _buildInputLabel('Contraseña'),
               TextField(
                 controller: passwordController,
-                obscureText: true,
+                obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   hintText: '••••••••',
                   hintStyle: TextStyle(
                     color: AppColors.primary.withValues(alpha: .5),
                   ),
-                  suffixIcon: Icon(
-                    Icons.visibility_outlined,
-                    color: AppColors.primary.withValues(alpha: .7),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: AppColors.primary.withValues(alpha: .7),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
                 ),
               ),
 
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    '¿Olvidaste tu contraseña?',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
+              // Align(
+              //   alignment: Alignment.centerRight,
+              //   child: TextButton(
+              //     onPressed: () {},
+              //     child: const Text(
+              //       '¿Olvidaste tu contraseña?',
+              //       style: TextStyle(
+              //         color: AppColors.primary,
+              //         fontWeight: FontWeight.w600,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 20),
 
               // --- BOTÓN DE LOGIN CON BLOC ---

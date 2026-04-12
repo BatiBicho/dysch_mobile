@@ -54,29 +54,86 @@ class HomeScreen extends StatelessWidget {
                   builder: (context, state) {
                     if (state is WeeklySummarySuccess) {
                       final summary = state.summary;
+                      final hoursBreakdown = summary.hoursBreakdown;
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: SummaryCard(
-                                icon: Icons.access_time_filled,
-                                label: summary.completed.hours.formatted,
-                                subLabel: 'Trabajadas',
-                                color: AppColors.info,
+                        child: hoursBreakdown != null
+                            ? Column(
+                                children: [
+                                  // Horas desglosadas
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: SummaryCard(
+                                          icon: Icons.work_outline,
+                                          label:
+                                              hoursBreakdown.ordinary.formatted,
+                                          subLabel: 'Ordinarias',
+                                          color: AppColors.info,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: SummaryCard(
+                                          icon: Icons.trending_up,
+                                          label:
+                                              hoursBreakdown.extras.formatted,
+                                          subLabel: 'Extras',
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: SummaryCard(
+                                          icon: Icons.calendar_month,
+                                          label: summary.summary.daysProgress,
+                                          subLabel: 'Asistidos',
+                                          color: Colors.purple,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: SummaryCard(
+                                          icon: Icons.warning_outlined,
+                                          label: hoursBreakdown
+                                              .sobreExtras
+                                              .formatted,
+                                          subLabel: 'Sobre Extras',
+                                          color: Colors.red.withValues(
+                                            alpha: 0.7,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: SummaryCard(
+                                      icon: Icons.access_time_filled,
+                                      label: summary.completed.hours.formatted,
+                                      subLabel: 'Trabajadas',
+                                      color: AppColors.info,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: SummaryCard(
+                                      icon: Icons.calendar_month,
+                                      label: summary.summary.daysProgress,
+                                      subLabel: 'Asistidos',
+                                      color: Colors.purple,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: SummaryCard(
-                                icon: Icons.calendar_month,
-                                label: summary.summary.daysProgress,
-                                subLabel: 'Asistidos',
-                                color: Colors.purple,
-                              ),
-                            ),
-                          ],
-                        ),
                       );
                     } else if (state is WeeklySummaryLoading) {
                       return const Padding(
