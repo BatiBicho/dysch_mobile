@@ -1,60 +1,105 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
-  static ThemeData get lightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      colorSchemeSeed: AppColors.primary,
-      scaffoldBackgroundColor: AppColors.background,
+    static ThemeData get lightTheme {
+        // Esta es la misma fuente usada en la WEB:
+        final baseTextTheme = GoogleFonts.archivoNarrowTextTheme();
 
-      textTheme: GoogleFonts.interTextTheme().copyWith(
-        displayLarge: GoogleFonts.inter(
-          fontWeight: FontWeight.bold,
-          color: AppColors.onBackground,
-        ),
-        bodyMedium: GoogleFonts.inter(color: AppColors.onBackground),
-      ),
+        return ThemeData(
+            useMaterial3: true,
+            colorSchemeSeed: AppColors.primary,
+            scaffoldBackgroundColor: AppColors.background,
 
-      cardTheme: CardThemeData(
-        color: AppColors.surface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: AppColors.outline, width: 1),
-        ),
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      ),
+            textTheme: baseTextTheme.copyWith(
+                displayLarge: GoogleFonts.archivoNarrow(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.onBackground,
+                ),
 
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.onPrimary,
-          minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 0,
-        ),
-      ),
+                bodyMedium: GoogleFonts.archivoNarrow(
+                    color: AppColors.onBackground,
+                ),
+            ),
 
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
-        ),
-      ),
-    );
-  }
+            cardTheme: CardThemeData(
+                color: AppColors.surface,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: const BorderSide(color: AppColors.outline, width: 1),
+                ),
+
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            ),
+
+            elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.onPrimary,
+                    minimumSize: const Size(double.infinity, 56),
+
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                    ),
+
+                    elevation: 0,
+                ),
+            ),
+
+            navigationBarTheme: NavigationBarThemeData(
+                backgroundColor: AppColors.background,
+                indicatorColor: AppColors.primaryContainer,
+                labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                        return const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                        );
+                    }
+
+                    return const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.onSurfaceVariant,
+                    );
+                }),
+
+                iconTheme: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                        return const IconThemeData(color: AppColors.primary, size: 22);
+                    }
+
+                    return const IconThemeData(color: AppColors.onSurfaceVariant, size: 22);
+                }),
+
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+            ),
+
+            inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: AppColors.surface,
+
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                ),
+            ),
+        );
+    }
 }
