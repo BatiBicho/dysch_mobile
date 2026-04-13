@@ -5,6 +5,7 @@ import 'package:dysch_mobile/core/services/storage_service.dart';
 import 'package:dysch_mobile/data/repositories/feedback_repository.dart';
 import 'package:dysch_mobile/data/repositories/attendance_repository.dart';
 import 'package:dysch_mobile/data/repositories/notification_repository.dart';
+import 'package:dysch_mobile/data/repositories/prenomina_repository.dart';
 import 'package:dysch_mobile/data/repositories/schedule_repository.dart';
 import 'package:dysch_mobile/data/repositories/user_repository.dart';
 import 'package:dysch_mobile/data/repositories/incident_repository.dart';
@@ -75,6 +76,7 @@ void main() async {
   final notificationRepository = NotificationRepository(dio);
   final attendanceRepository = AttendanceRepository(dio);
   final shiftSwapRepository = ShiftSwapRepository(dio);
+  final prenominaRepository = PrenominaRepository(dio);
   final notificationService = NotificationService(notificationRepository);
 
   await notificationService.setup();
@@ -90,6 +92,7 @@ void main() async {
         RepositoryProvider.value(value: notificationRepository),
         RepositoryProvider.value(value: attendanceRepository),
         RepositoryProvider.value(value: shiftSwapRepository),
+        RepositoryProvider.value(value: prenominaRepository),
         RepositoryProvider.value(value: notificationService),
       ],
       child: MultiBlocProvider(
