@@ -26,6 +26,16 @@ class EvidenceUploadSuccess extends IncidentState {
   EvidenceUploadSuccess(this.evidence);
 }
 
+class MultipleEvidencesUploadSuccess extends IncidentState {
+  final List<EvidenceModel> evidences;
+  final int totalCount;
+
+  MultipleEvidencesUploadSuccess({
+    required this.evidences,
+    required this.totalCount,
+  });
+}
+
 class IncidentError extends IncidentState {
   final String message;
   IncidentError(this.message);
@@ -103,6 +113,42 @@ class IncidentCubit extends Cubit<IncidentState> {
         isSensitiveData: isSensitiveData,
       );
       emit(EvidenceUploadSuccess(evidence));
+    } catch (e) {
+      emit(IncidentError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  // Subir múltiples evidencias a Supabase Storage
+  ///
+  /// Este método sube múltiples archivos a Supabase y registra cada uno
+  /// como evidencia en el backend.
+  ///
+  /// [incidentId] - ID del incidente
+  /// [filePaths] - Lista de rutas locales de archivos
+  /// [fileTypes] - Lista de tipos de archivo (image, pdf, video, etc)
+  /// [isSensitiveDataList] - Lista booleana indicando si cada archivo es sensible
+  Future<void> uploadMultipleEvidences({
+    required String incidentId,
+    required List<String> filePaths,
+    required List<String> fileTypes,
+    required List<bool> isSensitiveDataList,
+  }) async {
+    try {
+      emit(IncidentLoading());
+
+      final evidences = await repository.uploadMultipleEvidences(
+        incidentId: incidentId,
+        filePaths: filePaths,
+        fileTypes: fileTypes,
+        isSensitiveDataList: isSensitiveDataList,
+      );
+
+      emit(
+        MultipleEvidencesUploadSuccess(
+          evidences: evidences,
+          totalCount: filePaths.length,
+        ),
+      );
     } catch (e) {
       emit(IncidentError(e.toString().replaceAll('Exception: ', '')));
     }

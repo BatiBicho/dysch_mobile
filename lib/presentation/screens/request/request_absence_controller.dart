@@ -135,7 +135,13 @@ class RequestAbsenceController {
     evidencesUploaded = 0;
   }
 
-  /// Subir evidencias uno por uno
+  /// Subir múltiples evidencias a Supabase
+  ///
+  /// Este método sube todos los archivos seleccionados a Supabase Storage
+  /// y registra cada uno como evidencia en el backend.
+  ///
+  /// [incidentId] - ID del incidente
+  /// [context] - BuildContext para acceder al Cubit
   Future<void> uploadEvidences({
     required BuildContext context,
     required String incidentId,
@@ -146,18 +152,21 @@ class RequestAbsenceController {
 
     prepareEvidenceUpload();
 
-    for (var file in selectedFiles) {
-      final fileExtension = (file['extension'] as String).toUpperCase();
+    // Preparar listas para la subida múltiple
+    final filePaths = selectedFiles.map((f) => f['path'] as String).toList();
+    final fileTypes = selectedFiles
+        .map((f) => f['extension'] as String)
+        .toList();
+    final isSensitiveDataList = List<bool>.filled(selectedFiles.length, false);
 
-      if (context.mounted) {
-        context.read<IncidentCubit>().uploadEvidence(
-          incidentId: incidentId,
-          filePath:
-              'https://storage.googleapis.com/mi-bucket/evidencias/${file['name']}',
-          fileType: fileExtension,
-          isSensitiveData: false,
-        );
-      }
+    if (context.mounted) {
+      // Usar el nuevo método de subida múltiple de evidencias
+      context.read<IncidentCubit>().uploadMultipleEvidences(
+        incidentId: incidentId,
+        filePaths: filePaths,
+        fileTypes: fileTypes,
+        isSensitiveDataList: isSensitiveDataList,
+      );
     }
   }
 

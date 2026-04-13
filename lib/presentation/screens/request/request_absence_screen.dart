@@ -113,23 +113,23 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
     if (!success && _selectedFiles.isEmpty) {
       RequestAbsenceUI.showErrorSnackBar(
         context,
-        '❌ Error al seleccionar archivos',
+        'Error al seleccionar archivos',
       );
     } else if (!success) {
       if (_selectedFiles.length >= 10) {
         RequestAbsenceUI.showErrorSnackBar(
           context,
-          '⚠️ Máximo 10 archivos permitidos',
+          'Máximo 10 archivos permitidos',
         );
       } else if (_validateTotalSize() > 20 * 1024 * 1024) {
         RequestAbsenceUI.showErrorSnackBar(
           context,
-          '⚠️ Límite total de 20MB alcanzado',
+          'Límite total de 20MB alcanzado',
         );
       } else {
         RequestAbsenceUI.showErrorSnackBar(
           context,
-          '❌ Imposible agregar archivo (tamaño máximo excedido)',
+          'Imposible agregar archivo (tamaño máximo excedido)',
         );
       }
     } else {
@@ -184,6 +184,8 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
   void _handleIncidentStateChange(BuildContext context, IncidentState state) {
     if (state is IncidentSuccess) {
       _handleIncidentCreated(context, state.incident.id);
+    } else if (state is MultipleEvidencesUploadSuccess) {
+      _handleMultipleEvidencesUploaded(context, state);
     } else if (state is EvidenceUploadSuccess) {
       _handleEvidenceUploaded(context);
     } else if (state is IncidentError) {
@@ -198,7 +200,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
     if (incidentId.isEmpty) {
       RequestAbsenceUI.showErrorSnackBar(
         context,
-        '❌ Error: No se pudo obtener el ID del incidente',
+        'Error: No se pudo obtener el ID del incidente',
       );
       return;
     }
@@ -206,12 +208,33 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
     if (_selectedFiles.isNotEmpty) {
       RequestAbsenceUI.showInfoSnackBar(
         context,
-        'Subiendo ${_selectedFiles.length} archivo(s)...',
+        'Subiendo ${_selectedFiles.length} archivo(s) a Supabase...',
       );
       _controller.uploadEvidences(context: context, incidentId: incidentId);
     } else {
       _showSuccessDialogAndReset(context);
     }
+  }
+
+  /// Manejar carga exitosa de múltiples evidencias
+  void _handleMultipleEvidencesUploaded(
+    BuildContext context,
+    MultipleEvidencesUploadSuccess state,
+  ) {
+    RequestAbsenceUI.hideSnackBar(context);
+
+    // Mostrar URLs de Supabase
+    String urlsInfo = '';
+    for (int i = 0; i < state.evidences.length; i++) {
+      urlsInfo += '${i + 1}. ${state.evidences[i].filePath}\n';
+    }
+
+    RequestAbsenceUI.showSuccessSnackBar(
+      context,
+      '${state.evidences.length} archivo(s) subido(s) correctamente a Supabase',
+    );
+
+    _showSuccessDialogAndReset(context);
   }
 
   void _handleEvidenceUploaded(BuildContext context) {
@@ -223,7 +246,7 @@ class _RequestAbsenceScreenState extends State<RequestAbsenceScreen> {
     } else {
       RequestAbsenceUI.showInfoSnackBar(
         context,
-        '✅ ${_controller.evidencesUploaded}/${_controller.totalEvidencesToUpload} archivo(s) subido(s)',
+        '${_controller.evidencesUploaded}/${_controller.totalEvidencesToUpload} archivo(s) subido(s)',
       );
     }
   }

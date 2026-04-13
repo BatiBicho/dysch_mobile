@@ -26,6 +26,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:logger/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/theme/app_theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +63,11 @@ void main() async {
       storageBucket: storageBucket.isNotEmpty ? storageBucket : null,
     ),
   );
+
+  final supabaseUrl = dotenv.get('SUPABASE_URL', fallback: '');
+  final supabaseAnonKey = dotenv.get('SUPABASE_ANON_KEY', fallback: '');
+
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
   // Formateo de fechas en español
   await initializeDateFormatting('es', null);
