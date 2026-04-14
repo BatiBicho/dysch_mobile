@@ -67,18 +67,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 Align(
                                                     alignment: Alignment.centerLeft,
                                                     child: Padding(
-                                                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                                                        child: GestureDetector(
-                                                            onTap: () => context.pop(),
-                                                            child: const SizedBox(
-                                                                width: 38,
-                                                                height: 38,
-                                                                child: Icon(
-                                                                    Icons.arrow_back_ios_new_rounded,
-                                                                    color: Colors.white,
-                                                                    size: 16,
-                                                                ),
+                                                        padding: const EdgeInsets.only(left: 16, top: 24),
+                                                        child: IconButton(
+                                                            onPressed: () => context.pop(),
+                                                            icon: const Icon(
+                                                                Icons.arrow_back_ios_new_rounded,
+                                                                color: Colors.white,
+                                                                size: 16,
                                                             ),
+                                                            padding: const EdgeInsets.all(20),
+                                                            constraints: const BoxConstraints(),
+                                                            visualDensity: VisualDensity.compact,
                                                         ),
                                                     ),
                                                 ),
