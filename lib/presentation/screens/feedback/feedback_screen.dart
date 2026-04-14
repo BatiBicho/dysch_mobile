@@ -34,7 +34,7 @@ class _FeedbackView extends StatelessWidget {
         scrolledUnderElevation: 0,
         title: const Text(
           'Evaluaciones',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22),
         ),
         centerTitle: false,
       ),
@@ -46,7 +46,6 @@ class _FeedbackView extends StatelessWidget {
                 context.read<FeedbackCubit>().loadPendingAssignments(),
             child: CustomScrollView(
               slivers: [
-                // ── Contenido ───────────────────────────────────────────
                 if (state is FeedbackLoading)
                   const SliverFillRemaining(child: _LoadingView())
                 else if (state is FeedbackError)
