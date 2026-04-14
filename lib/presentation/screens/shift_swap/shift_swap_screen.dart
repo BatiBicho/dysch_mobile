@@ -115,7 +115,7 @@ class _ShiftSwapScreenState extends State<ShiftSwapScreen>
               child: Text(
                 'Intercambios',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF1A1A1A),
                   letterSpacing: -0.4,
@@ -152,7 +152,7 @@ class _ShiftSwapScreenState extends State<ShiftSwapScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.primary : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                   boxShadow: isSelected
                       ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.25), blurRadius: 8, offset: const Offset(0, 3))]
                       : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4)],
