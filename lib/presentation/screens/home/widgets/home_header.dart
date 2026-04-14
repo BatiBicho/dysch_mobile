@@ -8,10 +8,27 @@ class HomeHeader extends StatelessWidget {
   final String name;
   const HomeHeader({super.key, required this.name});
 
+  // Fecha actual:
   String _getFormattedDate() {
     final now = DateTime.now();
-    final formatter = DateFormat('d MMMM yyyy');
+    final formatter = DateFormat("d 'de' MMMM 'de' yyyy", 'es');
     return formatter.format(now);
+  }
+
+  // Iniciales del nombre:
+  String _getInitials(String fullName) {
+    if (fullName.trim().isEmpty) return "?";
+
+    List<String> names = fullName.trim().split(RegExp(r'\s+'));
+    String initials = "";
+
+    for (var i = 0; i < names.length && i < 2; i++) {
+      if (names[i].isNotEmpty) {
+        initials += names[i][0].toUpperCase();
+      }
+    }
+
+    return initials;
   }
 
   @override
@@ -20,17 +37,24 @@ class HomeHeader extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          // Foto de Perfil con menú
+          // Menú con iniciales del usuario:
           PopupMenuButton(
             offset: const Offset(0, 50),
-            child: const CircleAvatar(
+            child: CircleAvatar(
               radius: 24,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=juan'),
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              child: Text(
+                _getInitials(name),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              ),
             ),
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 'logout',
-                child: Text('Cerrar Sesión'),
+                child: Text('Cerrar sesión'),
               ),
             ],
             onSelected: (value) {
@@ -40,12 +64,14 @@ class HomeHeader extends StatelessWidget {
               }
             },
           ),
+
           const SizedBox(width: 12),
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '¡Hola, $name!',
+                '¡Hola de nuevo, $name!',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -57,14 +83,21 @@ class HomeHeader extends StatelessWidget {
               ),
             ],
           ),
+
           const Spacer(),
-          // Icono Notificación
-          IconButton.filledTonal(
-            onPressed: () {
-              context.push('/notifications');
-            },
-            icon: const Badge(child: Icon(Icons.notifications_none)),
-          ),
+
+          IconButton(
+            onPressed: () => context.push('/notifications'),
+            icon: Badge(
+              padding: const EdgeInsets.all(4),
+              largeSize: 12,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: const Icon(
+                Icons.notifications_none_rounded,
+                size: 24,
+              ),
+            ),
+          )
         ],
       ),
     );
