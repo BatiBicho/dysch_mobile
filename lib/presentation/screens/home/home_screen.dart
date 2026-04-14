@@ -43,7 +43,7 @@ class HomeScreen extends StatelessWidget {
 
             // 3. Resumen Semanal
             const SliverToBoxAdapter(
-              child: SectionTitle(title: 'Resumen Semanal'),
+              child: SectionTitle(title: 'Resumen semanal'),
             ),
             SliverToBoxAdapter(
               child: BlocProvider<WeeklySummaryCubit>(
@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                                           label: hoursBreakdown
                                               .sobreExtras
                                               .formatted,
-                                          subLabel: 'Sobre Extras',
+                                          subLabel: 'Sobre extras',
                                           color: Colors.red.withValues(
                                             alpha: 0.7,
                                           ),
@@ -193,7 +193,7 @@ class HomeScreen extends StatelessWidget {
             ),
 
             // 4. Menú Rápido (Grid)
-            const SliverToBoxAdapter(child: SectionTitle(title: 'Menú Rápido')),
+            const SliverToBoxAdapter(child: SectionTitle(title: 'Menú rápido')),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverGrid.count(
@@ -204,7 +204,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   QuickMenuCard(
                     icon: Icons.edit_calendar,
-                    label: 'Solicitar Permiso',
+                    label: 'Solicitar permiso',
                     color: AppColors.warning.withValues(alpha: 0.1),
                     iconColor: AppColors.warning,
                     onTap: () => context.push('/request-absence'),
@@ -218,7 +218,7 @@ class HomeScreen extends StatelessWidget {
                   // ),
                   QuickMenuCard(
                     icon: Icons.history,
-                    label: 'Historial de Incidentes',
+                    label: 'Historial de incidentes',
                     color: AppColors.warning.withValues(alpha: 0.1),
                     iconColor: AppColors.warning,
                     onTap: () => context.push('/history'),

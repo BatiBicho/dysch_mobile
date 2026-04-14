@@ -3,6 +3,7 @@ import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class AttendanceCard extends StatefulWidget {
   const AttendanceCard({super.key});
@@ -22,6 +23,16 @@ class _AttendanceCardState extends State<AttendanceCard> {
 
     // Cargar el schedule para hoy
     context.read<ScheduleCubit>().getSchedule(dateString);
+  }
+
+  // Formato de horario a mostrar:
+  String _formatTime(String time) {
+    try {
+      final DateTime tempDate = DateFormat("HH:mm:ss").parse(time);
+      return DateFormat('hh:mma').format(tempDate).toLowerCase();
+    } catch (e) {
+      return time;
+    }
   }
 
   @override
@@ -94,13 +105,14 @@ class _AttendanceCardState extends State<AttendanceCard> {
                 const StreamClock(), // Un pequeño widget que se actualiza cada segundo
 
                 Text(
-                  'Tu turno: ${schedule.startTime} - ${schedule.endTime}',
+                  'Tu turno: ${_formatTime(schedule.startTime)} - ${_formatTime(schedule.endTime)}',
                   style: TextStyle(
                     color: Colors.grey[500],
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+
                 const SizedBox(height: 24),
 
                 // Botón de Acción Principal
@@ -283,15 +295,14 @@ class StreamClock extends StatelessWidget {
       stream: Stream.periodic(const Duration(seconds: 1)),
       builder: (context, snapshot) {
         final now = DateTime.now();
-        final timeString =
-            "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+        final timeString = DateFormat('hh:mm a').format(now).toUpperCase();
 
         return Text(
           timeString,
           style: const TextStyle(
             fontSize: 54,
             fontWeight: FontWeight.bold,
-            letterSpacing: -2,
+            letterSpacing: -1,
           ),
         );
       },
