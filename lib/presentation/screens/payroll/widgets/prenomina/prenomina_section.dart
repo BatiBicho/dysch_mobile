@@ -156,7 +156,7 @@ class _PrenominaSectionState extends State<PrenominaSection> {
       children: [
         const Text(
           'Prenómina',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         PeriodDropdownSelector(
