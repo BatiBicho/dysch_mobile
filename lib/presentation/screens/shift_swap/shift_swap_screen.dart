@@ -1,6 +1,6 @@
-
 import 'package:dysch_mobile/core/theme/app_colors.dart';
 import 'package:dysch_mobile/data/models/shift_swap_model.dart';
+import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 import 'package:dysch_mobile/logic/shift_swap/shift_swap_cubit.dart';
 import 'package:dysch_mobile/presentation/screens/shift_swap/create_swap_screen.dart';
 import 'package:dysch_mobile/presentation/screens/shift_swap/widgets/shift_swap_card.dart';
@@ -39,6 +39,36 @@ class _ShiftSwapScreenState extends State<ShiftSwapScreen>
 
   void _refreshSwaps() => context.read<ShiftSwapCubit>().getShiftSwaps();
 
+  // Retorna TRUE en caso de que el usuario tenga una petición pendiente.
+  bool _hasActiveSwap(List<ShiftSwapModel> swaps) {
+    final authState = context.read<AuthCubit>().state;
+    final currentCode = authState is AuthSuccess ? authState.user.employeeCode : '';
+    return swaps.any((s) =>
+        (s.status == 'PENDING_PEER' || s.status == 'PENDING_SUPERVISOR') &&
+        s.requestingEmployeeCode == currentCode);
+  }
+
+  void _onFabTapped(List<ShiftSwapModel> swaps) {
+    if (_hasActiveSwap(swaps)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Ya tienes una solicitud en progreso. Espera a que se resuelva antes de crear una nueva.',
+          ),
+          backgroundColor: const Color(0xFFF59E0B),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CreateSwapScreen()),
+    ).then((_) => _refreshSwaps());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,14 +104,26 @@ class _ShiftSwapScreenState extends State<ShiftSwapScreen>
                   final pending = all.where((s) => s.status == 'PENDING_PEER' || s.status == 'PENDING_SUPERVISOR').toList();
                   final approved = all.where((s) => s.status == 'APPROVED').toList();
                   final rejected = all.where((s) => s.status == 'REJECTED').toList();
+                  final hasActive = _hasActiveSwap(all);
 
-                  return TabBarView(
-                    controller: _tabController,
+
+                  return Stack(
                     children: [
-                      _buildList(all),
-                      _buildList(pending),
-                      _buildList(approved),
-                      _buildList(rejected),
+                      TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _buildList(pending),
+                          _buildList(approved),
+                          _buildList(rejected),
+                          _buildList(all),
+                        ],
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: _buildFAB(all, hasActive),
+                      ),
                     ],
                   );
                 }
@@ -96,7 +138,6 @@ class _ShiftSwapScreenState extends State<ShiftSwapScreen>
           ),
         ],
       ),
-      floatingActionButton: _buildFAB(),
     );
   }
 
@@ -133,7 +174,7 @@ class _ShiftSwapScreenState extends State<ShiftSwapScreen>
   }
 
   Widget _buildTabBar() {
-    final labels = ['Todas', 'Pendientes', 'Aprobadas', 'Rechazadas'];
+    final labels = [ 'Pendientes', 'Aprobadas', 'Rechazadas', 'Todas' ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: SingleChildScrollView(
@@ -235,20 +276,56 @@ class _ShiftSwapScreenState extends State<ShiftSwapScreen>
     );
   }
 
-  Widget _buildFAB() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CreateSwapScreen()),
-        ).then((_) => _refreshSwaps());
-      },
-      backgroundColor: AppColors.primary,
-      elevation: 2,
-      icon: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
-      label: const Text(
-        'Solicitar intercambio',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+  Widget _buildFAB(List<ShiftSwapModel> swaps, bool hasActive) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (hasActive)
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFFBEB),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFFDE68A), width: 1),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded, size: 15, color: Color(0xFFF59E0B)),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Tienes una solicitud en progreso.',
+                      style: TextStyle(fontSize: 12, color: Color(0xFFB45309), fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          SizedBox(
+            height: 52,
+            child: ElevatedButton.icon(
+              onPressed: () => _onFabTapped(swaps),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: hasActive ? const Color(0xFFD1D5DB) : AppColors.primary,
+                elevation: hasActive ? 0 : 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              icon: Icon(
+                hasActive ? Icons.block_rounded : Icons.add_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              label: Text(
+                hasActive ? 'Solicitud en progreso' : 'Solicitar intercambio',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
