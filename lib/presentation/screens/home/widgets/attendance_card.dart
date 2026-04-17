@@ -1,9 +1,11 @@
 import 'package:dysch_mobile/core/theme/app_colors.dart';
+import 'package:dysch_mobile/logic/attendance/attendance_cubit.dart';
 import 'package:dysch_mobile/logic/schedule/schedule_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:dysch_mobile/logic/auth/auth_cubit.dart';
 
 class AttendanceCard extends StatefulWidget {
   const AttendanceCard({super.key});
@@ -13,19 +15,27 @@ class AttendanceCard extends StatefulWidget {
 }
 
 class _AttendanceCardState extends State<AttendanceCard> {
+
   @override
   void initState() {
     super.initState();
-    // Obtener la fecha actual en formato YYYY-MM-DD
-    final today = DateTime.now();
-    final dateString =
-        "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
 
-    // Cargar el schedule para hoy
-    context.read<ScheduleCubit>().getSchedule(dateString);
+    String? employeeId;
+    final authState = context.read<AuthCubit>().state;
+
+    if (authState is AuthSuccess) {
+      employeeId = authState.user.employeeId;
+    }
+
+    final today = DateTime.now();
+    final dateString = DateFormat('yyyy-MM-dd').format(today);
+
+    context.read<ScheduleCubit>().getSchedule(
+      dateString,
+      employeeId: employeeId,
+    );
   }
 
-  // Formato de horario a mostrar:
   String _formatTime(String time) {
     try {
       final DateTime tempDate = DateFormat("HH:mm:ss").parse(time);
@@ -38,48 +48,31 @@ class _AttendanceCardState extends State<AttendanceCard> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScheduleCubit, ScheduleState>(
+      buildWhen: (previous, current) =>
+        current is ScheduleLoading ||
+        current is ScheduleSuccess ||
+        current is ScheduleError,
       builder: (context, state) {
         if (state is ScheduleLoading) {
-          return const _AttendanceLoading(); // Un placeholder bonito
+          return const _AttendanceLoading();
         }
 
         if (state is ScheduleSuccess) {
           final schedule = state.schedules;
 
-          // Si no hay schedule para hoy, mostrar mensaje de descanso
           if (schedule == null) {
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.beach_access, size: 64, color: Colors.blue),
-                  const SizedBox(height: 16),
-                  const Text(
-                    '¡Descansa hoy!',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'No tienes turno programado',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-            );
+            return _buildRestCard();
           }
+
+          // Inicializar el cubit de asistencia con el estado del turno
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            context.read<AttendanceCubit>().initFromSchedule(
+                  isCompleted: schedule.isCompleted,
+                  startTime: schedule.startTime,
+                  endTime: schedule.endTime,
+                );
+          });
 
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -97,13 +90,7 @@ class _AttendanceCardState extends State<AttendanceCard> {
             ),
             child: Column(
               children: [
-                // Badge de ubicación dinámico
-                // _buildLocationBadge('UBICACIÓN NO DETECTADA'),
-                // const SizedBox(height: 16),
-
-                // Reloj o Tiempo Transcurrido
-                const StreamClock(), // Un pequeño widget que se actualiza cada segundo
-
+                const StreamClock(),
                 Text(
                   'Tu turno: ${_formatTime(schedule.startTime)} - ${_formatTime(schedule.endTime)}',
                   style: TextStyle(
@@ -112,11 +99,11 @@ class _AttendanceCardState extends State<AttendanceCard> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-
                 const SizedBox(height: 24),
-
-                // Botón de Acción Principal
-                _buildActionButton(context, schedule),
+                _ActionButton(
+                  startTime: schedule.startTime,
+                  endTime: schedule.endTime,
+                ),
               ],
             ),
           );
@@ -131,97 +118,240 @@ class _AttendanceCardState extends State<AttendanceCard> {
     );
   }
 
-  Widget _buildLocationBadge(String location) {
+  Widget _buildRestCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.green.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.location_on, size: 14, color: Colors.green),
-          const SizedBox(width: 6),
+          const Icon(Icons.beach_access, size: 64, color: Colors.blue),
+          const SizedBox(height: 16),
+          const Text(
+            '¡Descansa hoy!',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
           Text(
-            location.toUpperCase(),
-            style: const TextStyle(
-              color: Colors.green,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
+            'No tienes turno programado',
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildActionButton(BuildContext context, dynamic schedule) {
-    // Verificar si el turno ya está completado
-    final isCompleted = schedule.isCompleted ?? false;
+/// Widget separado para el botón de acción, reactivo al AttendanceCubit.
+class _ActionButton extends StatelessWidget {
+  final String startTime;
+  final String endTime;
 
-    // Si el turno está completado, mostrar un mensaje en lugar del botón
-    if (isCompleted) {
-      return Container(
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        child: Column(
+  const _ActionButton({required this.startTime, required this.endTime});
+
+  /// Retorna true si ahora mismo está dentro de la ventana de ±15 min.
+  bool _isWithinWindow(AttendanceAction action) {
+    final now = DateTime.now();
+
+    DateTime? parseTime(String t) {
+      final p = t.split(':');
+      if (p.length < 2) return null;
+      return DateTime(now.year, now.month, now.day,
+          int.tryParse(p[0]) ?? 0, int.tryParse(p[1]) ?? 0);
+    }
+
+    if (action == AttendanceAction.checkIn) {
+      final start = parseTime(startTime);
+      final end = parseTime(endTime);
+      // Bloqueado si el turno ya terminó o si falta más de 15 min para empezar
+      if (end != null && now.difference(end).inMinutes > 15) return false;
+      if (start != null && start.difference(now).inMinutes > 15) return false;
+      return true;
+    } else {
+      final end = parseTime(endTime);
+      if (end == null) return true;
+      final diff = now.difference(end).inMinutes;
+      return diff >= -15 && diff <= 15;
+    }
+  }
+
+  String _windowHint(AttendanceAction action) {
+    final now = DateTime.now();
+    DateTime? parseTime(String t) {
+      final p = t.split(':');
+      if (p.length < 2) return null;
+      return DateTime(now.year, now.month, now.day,
+          int.tryParse(p[0]) ?? 0, int.tryParse(p[1]) ?? 0);
+    }
+
+    if (action == AttendanceAction.checkIn) {
+      final end = parseTime(endTime);
+      if (end != null && now.difference(end).inMinutes > 15) {
+        return 'Tu turno ya finalizó';
+      }
+      final start = parseTime(startTime);
+      if (start != null && start.difference(now).inMinutes > 15) {
+        final mins = start.difference(now).inMinutes;
+        return 'Disponible en $mins min';
+      }
+    } else {
+      final end = parseTime(endTime);
+      if (end != null) {
+        final diff = now.difference(end).inMinutes;
+        if (diff < -15) {
+          return 'Disponible en ${end.difference(now).inMinutes} min';
+        }
+        if (diff > 15) return 'Ventana de salida expirada';
+      }
+    }
+    return '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AttendanceCubit, AttendanceState>(
+      builder: (context, state) {
+        final hasCheckedIn =
+            state is AttendanceReady ? state.hasCheckedIn : false;
+        final hasCheckedOut =
+            state is AttendanceReady ? state.hasCheckedOut : false;
+
+        // Turno completamente registrado
+        if (hasCheckedIn && hasCheckedOut) {
+          return _buildCompletedBadge();
+        }
+
+        // Ya hizo check-in → mostrar botón de check-out
+        if (hasCheckedIn) {
+          final action = AttendanceAction.checkOut;
+          final enabled = _isWithinWindow(action);
+          return _buildButton(
+            context,
+            label: 'REGISTRAR SALIDA',
+            icon: Icons.logout,
+            color: Colors.orange,
+            action: action,
+            enabled: enabled,
+            hint: enabled ? null : _windowHint(action),
+          );
+        }
+
+        // Sin check-in → mostrar botón de entrada
+        final action = AttendanceAction.checkIn;
+        final enabled = _isWithinWindow(action);
+        return _buildButton(
+          context,
+          label: 'REGISTRAR ENTRADA',
+          icon: Icons.fingerprint,
+          color: AppColors.primary,
+          action: action,
+          enabled: enabled,
+          hint: enabled ? null : _windowHint(action),
+        );
+      },
+    );
+  }
+
+  Widget _buildButton(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required Color color,
+    required AttendanceAction action,
+    required bool enabled,
+    String? hint,
+  }) {
+    return Column(
+      children: [
+        ElevatedButton(
+          onPressed: enabled
+              ? () => context.push(
+                    '/qr',
+                    extra: {
+                      'action': action,
+                      'startTime': startTime,
+                      'endTime': endTime,
+                    },
+                  )
+              : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: Colors.grey[300],
+            disabledForegroundColor: Colors.grey[500],
+            minimumSize: const Size(double.infinity, 64),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon),
+              const SizedBox(width: 12),
+              Text(label,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+        ),
+        if (hint != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            hint,
+            style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[500],
+                fontStyle: FontStyle.italic),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCompletedBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.check_circle, color: Colors.green, size: 32),
-                  SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Turno Completado',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.green,
-                        ),
-                      ),
-                      Text(
-                        'Tu turno de hoy ya ha sido registrado',
-                        style: TextStyle(fontSize: 12, color: Colors.green),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            Icon(Icons.check_circle, color: Colors.green, size: 32),
+            SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Turno Completado',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.green),
+                ),
+                Text(
+                  'Tu turno de hoy ya ha sido registrado',
+                  style: TextStyle(fontSize: 12, color: Colors.green),
+                ),
+              ],
             ),
           ],
         ),
-      );
-    }
-
-    return ElevatedButton(
-      onPressed: () => context.push('/qr'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        minimumSize: const Size(double.infinity, 64),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 0,
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.fingerprint),
-          SizedBox(width: 12),
-          Text(
-            'REGISTRAR ENTRADA',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-        ],
       ),
     );
   }
@@ -253,10 +383,9 @@ Widget _buildErrorState(BuildContext context, String message) {
         ),
         const SizedBox(height: 24),
         TextButton.icon(
-          onPressed: () {
-            // Volvemos a intentar la carga
-            context.read<ScheduleCubit>().getSchedule;
-          },
+          onPressed: () => context.read<ScheduleCubit>().getSchedule(
+                "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}",
+              ),
           icon: const Icon(Icons.refresh),
           label: const Text('REINTENTAR'),
           style: TextButton.styleFrom(
@@ -296,7 +425,6 @@ class StreamClock extends StatelessWidget {
       builder: (context, snapshot) {
         final now = DateTime.now();
         final timeString = DateFormat('hh:mm a').format(now).toUpperCase();
-
         return Text(
           timeString,
           style: const TextStyle(

@@ -5,6 +5,7 @@ class StorageService {
   static const _userIdKey = 'USER_ID';
   static const _tokenKey = 'AUTH_TOKEN';
   static const _userNameKey = 'USER_NAME';
+  static const _employeeIdKey = 'EMPLOYEE_ID';
 
   // --- Manejo del ID de Usuario ---
   Future<void> saveUserId(String id) async {
@@ -15,6 +16,16 @@ class StorageService {
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userIdKey);
+  }
+
+  Future<void> saveEmployeeId(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_employeeIdKey, id);
+  }
+
+  Future<String?> getEmployeeId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_employeeIdKey);
   }
 
   // --- Manejo del Token (Vital para la API) ---

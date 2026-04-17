@@ -175,7 +175,7 @@ class SwapDetailScreen extends StatelessWidget {
               child: Text(
                 'Detalle de solicitud',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF1A1A1A),
                   letterSpacing: -0.4,

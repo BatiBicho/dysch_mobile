@@ -43,6 +43,7 @@ class AuthCubit extends Cubit<AuthState> {
       final String? token = user.token;
       final String userId = user.id;
       final String userRole = user.role;
+      final String employeeId = user.employeeId;
 
       if (userRole != 'EMPLOYEE') {
         emit(AuthError("Solo los empleados pueden iniciar sesión"));
@@ -51,6 +52,11 @@ class AuthCubit extends Cubit<AuthState> {
 
       await storageService.saveToken(token ?? '');
       await storageService.saveUserId(userId);
+
+      // Guardamos el employeeId si existe
+      if (employeeId != null) {
+        await storageService.saveEmployeeId(employeeId);
+      }
 
       DioClient.setAuthToken(user.token ?? '');
       emit(AuthSuccess(user));

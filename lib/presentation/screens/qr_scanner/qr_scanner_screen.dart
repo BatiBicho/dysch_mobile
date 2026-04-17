@@ -6,7 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QrScannerScreen extends StatefulWidget {
-  const QrScannerScreen({super.key});
+  /// Parámetros opcionales pasados desde AttendanceCard vía GoRouter extra:
+  /// { 'action': AttendanceAction, 'startTime': String, 'endTime': String }
+  final Map<String, dynamic>? extra;
+
+  const QrScannerScreen({super.key, this.extra});
 
   @override
   State<QrScannerScreen> createState() => _QrScannerScreenState();
@@ -15,11 +19,24 @@ class QrScannerScreen extends StatefulWidget {
 class _QrScannerScreenState extends State<QrScannerScreen> {
   bool isScanning = true;
   bool _isDialogOpen = false;
-  AttendanceAction _currentAction = AttendanceAction.checkIn;
+  late AttendanceAction _currentAction;
+  String? _shiftStartTime;
+  String? _shiftEndTime;
+
   final MobileScannerController _scannerController = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
     facing: CameraFacing.back,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    final extra = widget.extra;
+    _currentAction =
+        (extra?['action'] as AttendanceAction?) ?? AttendanceAction.checkIn;
+    _shiftStartTime = extra?['startTime'] as String?;
+    _shiftEndTime = extra?['endTime'] as String?;
+  }
 
   @override
   void dispose() {
@@ -29,13 +46,17 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   void _onDetect(BarcodeCapture capture) {
     if (!isScanning) return;
-
-    final List<Barcode> barcodes = capture.barcodes;
+    final barcodes = capture.barcodes;
     if (barcodes.isEmpty) return;
 
     setState(() => isScanning = false);
     final String rawQr = barcodes.first.rawValue ?? '';
-    context.read<AttendanceCubit>().submitAttendance(rawQr, _currentAction);
+    context.read<AttendanceCubit>().submitAttendance(
+          rawQr,
+          _currentAction,
+          shiftStartTime: _shiftStartTime,
+          shiftEndTime: _shiftEndTime,
+        );
   }
 
   void _showLoadingDialog() {
@@ -54,9 +75,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           ],
         ),
       ),
-    ).then((_) {
-      _isDialogOpen = false;
-    });
+    ).then((_) => _isDialogOpen = false);
   }
 
   void _closeLoadingDialog() {
@@ -66,18 +85,13 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   void _showSuccessSheet(AttendanceSuccess state) {
-    final title = state.action == AttendanceAction.checkIn
-        ? 'Check-in registrado'
-        : 'Check-out registrado';
-    final timestamp = state.action == AttendanceAction.checkIn
+    final isCheckIn = state.action == AttendanceAction.checkIn;
+    final title = isCheckIn ? 'Check-in registrado' : 'Check-out registrado';
+    final timestamp = isCheckIn
         ? state.response.record.checkInClientTimestamp
         : state.response.record.checkOutClientTimestamp;
-    final subtitle = state.action == AttendanceAction.checkIn
-        ? '¡Entrada exitosa!'
-        : '¡Salida registrada!';
-    final details =
-        state.action == AttendanceAction.checkOut &&
-            state.response.minutesWorked != null
+    final subtitle = isCheckIn ? '¡Entrada exitosa!' : '¡Salida registrada!';
+    final details = !isCheckIn && state.response.minutesWorked != null
         ? 'Horas trabajadas: ${state.response.minutesWorked}'
         : 'Usuario: ${state.response.record.employeeName}';
 
@@ -95,10 +109,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 72),
             const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            Text(title,
+                style: const TextStyle(
+                    fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(subtitle),
             if (timestamp != null) ...[
@@ -120,9 +133,10 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   void _showErrorSnackBar(AttendanceError state) {
     final errorDetails = state.errors.entries
-        .map((entry) => '${entry.key}: ${entry.value.join(', ')}')
+        .map((e) => '${e.key}: ${e.value.join(', ')}')
         .join(' • ');
-    final message = state.message.isNotEmpty ? state.message : errorDetails;
+    final message =
+        state.message.isNotEmpty ? state.message : errorDetails;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -136,6 +150,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isCheckIn = _currentAction == AttendanceAction.checkIn;
+
     return BlocListener<AttendanceCubit, AttendanceState>(
       listener: (context, state) {
         if (state is AttendanceLoading) {
@@ -156,66 +172,51 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            _currentAction == AttendanceAction.checkIn
-                ? 'Escanear Check-in'
-                : 'Escanear Check-out',
+            isCheckIn ? 'Escanear Check-in' : 'Escanear Check-out',
           ),
           backgroundColor: Colors.white,
         ),
         body: SafeArea(
           child: Column(
             children: [
+              // Indicador de acción fija (no editable desde aquí)
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _currentAction == AttendanceAction.checkIn
-                              ? AppColors.primary
-                              : Colors.white,
-                          foregroundColor:
-                              _currentAction == AttendanceAction.checkIn
-                              ? Colors.white
-                              : Colors.black,
-                          side: const BorderSide(color: AppColors.primary),
-                        ),
-                        onPressed: () {
-                          setState(
-                            () => _currentAction = AttendanceAction.checkIn,
-                          );
-                        },
-                        child: const Text('Check-in'),
-                      ),
+                    horizontal: 16, vertical: 12),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: isCheckIn
+                        ? AppColors.primary.withValues(alpha: 0.1)
+                        : Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isCheckIn ? AppColors.primary : Colors.orange,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _currentAction == AttendanceAction.checkOut
-                              ? AppColors.primary
-                              : Colors.white,
-                          foregroundColor:
-                              _currentAction == AttendanceAction.checkOut
-                              ? Colors.white
-                              : Colors.black,
-                          side: const BorderSide(color: AppColors.primary),
-                        ),
-                        onPressed: () {
-                          setState(
-                            () => _currentAction = AttendanceAction.checkOut,
-                          );
-                        },
-                        child: const Text('Check-out'),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        isCheckIn ? Icons.login : Icons.logout,
+                        color: isCheckIn ? AppColors.primary : Colors.orange,
+                        size: 20,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(
+                        isCheckIn
+                            ? 'Registrando ENTRADA'
+                            : 'Registrando SALIDA',
+                        style: TextStyle(
+                          color:
+                              isCheckIn ? AppColors.primary : Colors.orange,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Expanded(
@@ -230,7 +231,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                         width: 250,
                         height: 250,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 4),
+                          border:
+                              Border.all(color: Colors.white, width: 4),
                           borderRadius: BorderRadius.circular(24),
                         ),
                       ),
@@ -253,11 +255,12 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            _currentAction == AttendanceAction.checkIn
+                            isCheckIn
                                 ? 'Se enviará un check-in'
                                 : 'Se enviará un check-out',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white70),
+                            style:
+                                const TextStyle(color: Colors.white70),
                           ),
                         ],
                       ),
